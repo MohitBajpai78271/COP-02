@@ -74,7 +74,6 @@ class ApiMapsViewController: UIViewController{
     }
     
     func setupLocationManager(){
-        
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.requestWhenInUseAuthorization()
@@ -141,6 +140,7 @@ class ApiMapsViewController: UIViewController{
                     alertController.view.superview?.addGestureRecognizer(self.tapGesture!)
                 }
     }
+    
     @objc func dismissAlertController(){
         self.dismiss(animated: true, completion: nil)
         if let tapGesture = tapGesture{
@@ -173,7 +173,11 @@ class ApiMapsViewController: UIViewController{
         var components = URLComponents(string: "\(ApiKeys.baseURL)/view-data/crimedata")!
         components.queryItems = parameters.isEmpty ? nil : parameters.map { URLQueryItem(name: $0.key, value: $0.value) }
 
-        guard let apiUrl = components.url else {return }
+        guard let apiUrl = components.url else {
+            print("Invalid URL")
+                  dismissLoadingView()
+                  return
+        }
 
         AF.request(apiUrl, parameters: parameters).responseDecodable(of: [Crime].self) { response in
             

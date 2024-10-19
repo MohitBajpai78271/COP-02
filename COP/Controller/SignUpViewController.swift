@@ -27,6 +27,7 @@ class SignUpViewController: UIViewController{
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         setupTextField()
         GeneratedOTPOutlet.tintColor = UIColor.gray
         setupCheckBox()
@@ -36,9 +37,10 @@ class SignUpViewController: UIViewController{
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.modalPresentationStyle = .fullScreen
-        navigationItem.hidesBackButton = false
-        navigationController?.isNavigationBarHidden = false
+        navigationController?.setNavigationBarHidden(false, animated: true)
+//        navigationController?.modalPresentationStyle = .fullScreen
+//        navigationItem.hidesBackButton = false
+//        navigationController?.isNavigationBarHidden = false
     }
 
     func setupTextField(){
@@ -46,11 +48,18 @@ class SignUpViewController: UIViewController{
         MobileNoTextFieldSignUp.autocorrectionType = .no
     }
     
-    @objc func backButtonTapped() {
-        self.navigationController?.popViewController(animated: true)
-     }
+    @IBAction func existingUserPressed(_ sender: UIButton) {
+        guard let navController = self.navigationController else {
+                   print("Navigation Controller is nil")
+                   return
+               }
+               
+               // Instantiate the SignUpViewController
+               let signupVC = storyboard?.instantiateViewController(withIdentifier: "SignInViwController") as! SignInViwController
+               navController.pushViewController(signupVC, animated: true)
+    }
     
-     private func setupCheckBox() {
+    private func setupCheckBox() {
          let checkBoxSwitch = UISwitch()
          styleCheckBox(checkBoxSwitch)
          checkBoxSwitch.addTarget(self, action: #selector(switchValueChanged(_:)), for: .valueChanged)

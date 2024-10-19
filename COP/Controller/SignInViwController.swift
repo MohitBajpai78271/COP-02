@@ -21,7 +21,6 @@ class SignInViwController: UIViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTextField()
-        
         GenerateOTPView.tintColor = UIColor.lightGray
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
@@ -37,15 +36,22 @@ class SignInViwController: UIViewController{
         navigationController?.isNavigationBarHidden = false
     }
     
+    @IBAction func signUpButtonTapped(_ sender: UIButton) {
+        if let navController = self.navigationController {
+                let signupVC = storyboard?.instantiateViewController(withIdentifier: "SignUpViewController") as! SignUpViewController
+                navController.pushViewController(signupVC, animated: true)
+            } else {
+                print("Navigation Controller is nil")
+            }
+    }
     
     func setupTextField(){
         MoblineNoTextField.delegate = self
         MoblineNoTextField.autocorrectionType = .no
-        MoblineNoTextField.keyboardType = .emailAddress
+        MoblineNoTextField.keyboardType = .numberPad
     }
      
     @IBAction func GenerateOTPPressed(_ sender: UIButton) {
-        
         guard let phoneNumber = MoblineNoTextField.text, !phoneNumber.isEmpty else {
             alertHelper.showAlert(on: self, message: "Phone number cannot be empty")
             return
@@ -70,7 +76,6 @@ class SignInViwController: UIViewController{
                     self.alertHelper.showAlert(on: self, message: response.msg)
                     if response .success {
                         self.performSegue(withIdentifier: K.signinSegue, sender: fullphoneNumber)
-
                     }  else {
                         self.alertHelper.showAlert(on: self, message:  "No response received or data couldn't be decoded")
                     }

@@ -16,26 +16,34 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
-                window = UIWindow(windowScene: windowScene)
-                let storyboard = UIStoryboard(name: "Main", bundle: nil)
+           
+        // 1. Create a UIWindow with the windowScene
+        window = UIWindow(windowScene: windowScene)
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
 
-                let isLoggedIn = UserDefaults.standard.bool(forKey: "isLoggedIn")
-                let initialViewController: UIViewController
-                
-                if isFirstLaunch() {
-                  performLogout()
-                }
+        // 2. Check if the user is logged in
+        let isLoggedIn = UserDefaults.standard.bool(forKey: "isLoggedIn")
+        let initialViewController: UIViewController
         
-                if isLoggedIn {
-                    // User is logged in, show TabBarViewController
-                    initialViewController = storyboard.instantiateViewController(withIdentifier: K.tabbarView)
-                } else {
-                    // User is not logged in, show SignInViewController
-                    initialViewController = storyboard.instantiateViewController(withIdentifier: K.signinView)//convert to singinviwcontroller
-                }
-                
-                window?.rootViewController = initialViewController
-                window?.makeKeyAndVisible()
+        // 3. Depending on login status, decide the initial view controller
+        if isLoggedIn {
+            // User is logged in, show TabBarController (or other view controllers)
+            initialViewController = storyboard.instantiateViewController(withIdentifier: K.tabbarView)
+        } else {
+            // User is not logged in, show SignInViewController embedded in a UINavigationController
+            let signInVC = storyboard.instantiateViewController(withIdentifier: K.signinView) as! SignInViwController
+            let navController = UINavigationController(rootViewController: signInVC)
+            initialViewController = navController
+        }
+        
+        // 4. Set the initial view controller as the root and make it visible
+        window?.rootViewController = initialViewController
+        window?.makeKeyAndVisible()
+    }
+    
+    func createSigninNC() -> UINavigationController{
+        let signinVC = SignInViwController()
+        return UINavigationController(rootViewController: signinVC)
     }
 
     func isFirstLaunch() -> Bool {
@@ -50,16 +58,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
            return isFirstLaunch
        }
 
-       // Function to perform logout
-       func performLogout() {
-           UserDefaults.standard.removeObject(forKey: "isLoggedIn")
-           UserDefaults.standard.removeObject(forKey: "userToken")
-
-           let storyboard = UIStoryboard(name: "Main", bundle: nil)
-           let loginViewController = storyboard.instantiateViewController(withIdentifier: K.signinView)
-           window?.rootViewController = loginViewController
-           window?.makeKeyAndVisible()
-       }
+//       // Function to perform logout
+//       func performLogout() {
+//           UserDefaults.standard.removeObject(forKey: "isLoggedIn")
+//           UserDefaults.standard.removeObject(forKey: "userToken")
+//
+//           let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//           let loginViewController = storyboard.instantiateViewController(withIdentifier: K.signinView)
+//           window?.rootViewController = loginViewController
+//           window?.makeKeyAndVisible()
+//       }
 
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.

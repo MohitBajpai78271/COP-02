@@ -20,14 +20,12 @@ class OTPViewController: UIViewController{
     
     var phoneNumber : String?
     
-    
     let alertHelper = AlertManager.shared
 
     var otpVerification : Bool = false
     
     var timer : Timer?
     var remainingSeconds = 120
-    let url = "http://93.127.172.217:4000"
     var authservice = AuthService()
     
     
@@ -39,9 +37,13 @@ class OTPViewController: UIViewController{
         resendButton.isHidden = true
         phoneNumber = UserDefaults.standard.string(forKey: "userPhoneNumber") ?? UserDefaults.standard.string(forKey: "phoneNumberSignUp")
     }
+    
+    @objc func dismssVC() {
+        dismiss(animated: true)
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.isNavigationBarHidden = true
     }
     
     @IBAction func verifyPressed(_ sender: UIButton) {
@@ -64,26 +66,43 @@ class OTPViewController: UIViewController{
     
     private func verifyOtp(phoneNumber: String, otp: String) {
         
-        authservice.verifyOtp(phoneNumber: phoneNumber, otp: otp, isSignUp: UserData.shared.isSignup) { result in
-            switch result {
-            case .success:
-                DispatchQueue.main.async {
-                    self.otpVerification = true
-                    if self.otpVerification{
-                        self.handleOTPVerification()
-                    }else{
-                        print("otp verification failed")
+        if let _ = UserDefaults.standard.string(forKey: "x-auth-token") {
+                  showLogoutAlert()
+        }else{
+            authservice.verifyOtp(phoneNumber: phoneNumber, otp: otp, isSignUp: UserData.shared.isSignup) { result in
+                switch result {
+                case .success:
+                    DispatchQueue.main.async {
+                        self.otpVerification = true
+                        if self.otpVerification{
+                            self.handleOTPVerification()
+                        }else{
+                            print("otp verification failed")
+                        }
+                    }
+                case .failure(let error):
+                    DispatchQueue.main.async {
+                        self.alertHelper.showAlert(on: self, message: error.localizedDescription)
                     }
                 }
-            case .failure(let error):
-                DispatchQueue.main.async {
-                    self.alertHelper.showAlert(on: self, message: error.localizedDescription)
-                }
             }
-            
         }
     }
     
+    func showLogoutAlert() {
+           let alert = UIAlertController(   title: "Confirm Logout",
+                                         message: "Are you sure you want to logout?",
+                                         preferredStyle: .alert)
+           alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+           alert.addAction(UIAlertAction(title: "Logout", style: .destructive, handler: { _ in
+               self.handleLogout()
+           }))
+           self.present(alert, animated: true, completion: nil)
+       }
+    
+    func handleLogout(){
+        AuthService.shared.logOut(phoneNumber: phoneNumber!, context: self)
+    }
     
     func otpTextFieldSetUp(){
         
@@ -103,6 +122,7 @@ class OTPViewController: UIViewController{
         otpText6.addTarget(self, action: #selector(textFieldDidChange(_:)), for: .editingChanged)
         
     }
+    
     @IBAction func resendButtonTapped(_ sender: UIButton) {
         let phoneNumber = UserData.shared.phoneNumber!
         let fullphoneNumber = "+91\(phoneNumber)"
@@ -165,6 +185,17 @@ class OTPViewController: UIViewController{
             }
         }
     }
+    
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        if let text = textField.text, let textRange = Range(range, in: text) {
+            let updatedText = text.replacingCharacters(in: textRange, with: string)
+            return updatedText.count <= 1 && (string.isEmpty || Int(string) != nil)
+        }
+        return false
+    }
+    
+    
     func startTimer(){
         remainingSeconds = 120
         timerLabel.text = "Resend in \(remainingSeconds) seconds"

@@ -55,7 +55,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate{
     }
     
     func setupToolBar(){
-        
         let toolbar = UIToolbar()
                toolbar.sizeToFit()
                let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(donePressed))
@@ -64,9 +63,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate{
         
     }
     
-    
     func setupInitialTexts(){
-         
          UserName.addFloatingPlaceholder("Name Of Person")
          DateOfBirth.addFloatingPlaceholder("Date Of Birth")
          MobileNo.addFloatingPlaceholder("Mobile No")
@@ -106,7 +103,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate{
                  enableTextFields(true)
                  
              } else {
-        
                  showAlertToSaveChanges()
                  toggleButtonImage(to: image1, for: sender)
              }
@@ -174,7 +170,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate{
 
       func showAlertToSaveChanges() {
           let alert = UIAlertController(title: "Save Changes?", message: "Are you sure you want to save all changes?", preferredStyle: .alert)
-
           let okAction = UIAlertAction(title: "OK", style: .default) { _ in
               
               guard let phoneNumber = self.MobileNo.text, !phoneNumber.isEmpty,
@@ -184,43 +179,18 @@ class ProfileViewController: UIViewController, UITextFieldDelegate{
                   self.doAlert.showAlert(on: self, message: "Please fill in all fields")
                      return
                  }
-                 
+              
+              UserDefaults.standard.set(phoneNumber, forKey: "phoneNumber")
+              UserDefaults.standard.set(userName, forKey: "userName")
+              UserDefaults.standard.set(address, forKey: "address")
+              UserDefaults.standard.set(dateOfBirth, forKey: "dateOfBirth")
+              UserDefaults.standard.synchronize()
+              
               self.authService.updateUser(context: self, phoneNumber: phoneNumber, userName: userName, address: address, dateOfBirth: dateOfBirth) { result in
                   DispatchQueue.main.async{
                   switch result {
                   case .success:
-              
-                      self.authService.getUserData(context: self) { result in
-                                             DispatchQueue.main.async {
-                                                 switch result {
-                                                 case .success(let userData):
-                                                     // Update and persist the values
-                                                     if let phoneNumber = userData["phoneNumber"] as? String {
-                                                         UserDefaults.standard.set(phoneNumber, forKey: "phoneNumber")
-                                                         self.MobileNo.text = phoneNumber
-                                                     }
-                                                     if let userName = userData["userName"] as? String {
-                                                         UserDefaults.standard.set(userName, forKey: "userName")
-                                                         self.UserName.text = userName
-                                                     }
-                                                     if let address = userData["address"] as? String {
-                                                         UserDefaults.standard.set(address, forKey: "address")
-                                                         self.PoliceStation.text = address
-                                                     }
-                                                     if let dateOfBirth = userData["dateOfBirth"] as? String {
-                                                         UserDefaults.standard.set(dateOfBirth, forKey: "dateOfBirth")
-                                                         self.DateOfBirth.text = dateOfBirth
-                                                     }
-                                                     UserDefaults.standard.synchronize()
-                                                     
-                                                     self.enableTextFields(false)
-                                                     self.dismiss(animated: true, completion: nil)
-
-                                        case .failure(let error):
-                                                     print("Failed to fetch updated user data: \(error.localizedDescription)")
-                                                 }
-                                             }
-                                         }
+                         print("Updated success!")
                   case .failure(let error):
                       print("Its a failure : \(error.localizedDescription)")
                   }
@@ -300,6 +270,6 @@ extension UITextField {
               placeholderLabel.textColor = .lightGray
               self.layer.borderColor = UIColor.lightGray.cgColor
           }
-          }
+     }
 }
 

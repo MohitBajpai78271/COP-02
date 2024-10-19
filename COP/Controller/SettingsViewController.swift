@@ -33,8 +33,6 @@ class SettingsViewController: UIViewController{
     
     @IBAction func logoutPressed(_ sender: UIButton) {
         phoneNumber = UserDefaults.standard.string(forKey: "userPhoneNumber") ?? UserDefaults.standard.string(forKey: "phoneNumberSignUp")
-        
         authService.logOut(phoneNumber: phoneNumber!, context: self)
-
     }
 }

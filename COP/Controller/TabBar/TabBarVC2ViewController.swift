@@ -12,9 +12,7 @@ class TabBarVC2ViewController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        // ser role from UserDefaults
            let userRole = UserDefaults.standard.string(forKey: "userRole")
-           
            let storyboard = UIStoryboard(name: "Main", bundle: nil)
            let homeVC = storyboard.instantiateViewController(withIdentifier: "HomeViewController")
            let profileVC = storyboard.instantiateViewController(withIdentifier: "ProfileViewController")
@@ -27,7 +25,7 @@ class TabBarVC2ViewController: UITabBarController {
            if userRole != "USER" {
                let adminVC = storyboard.instantiateViewController(withIdentifier: "AdminViewController")
                let adminNavController = UINavigationController(rootViewController: adminVC)
-                viewControllers.insert(adminNavController, at: 1)// Insert Admin tab at the desired position
+                viewControllers.insert(adminNavController, at: 1)
            }
            
            self.viewControllers = viewControllers

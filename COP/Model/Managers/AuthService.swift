@@ -10,8 +10,6 @@ class AuthService{
      public let userDefaults = UserDefaults.standard
      public let signedInKey = "isSignedIn"
     
-
-     
      public init() {}
      
      var isSignedIn: Bool {
@@ -27,7 +25,6 @@ class AuthService{
     
     func getOTP(phoneNumber: String,completion: @escaping(OTPResponse?, Error?)->Void){
         let urlString = "\(ApiKeys.baseURL)/api/send-otp"
-        
         let parameters: [String: Any] = ["phoneNumber": phoneNumber]
         
         AF.request(urlString, method: .post, parameters: parameters, encoding: JSONEncoding.default)
@@ -51,11 +48,11 @@ class AuthService{
     //MARK: - Verify OTP
     
     func verifyOtp(phoneNumber: String, otp: String, isSignUp: Bool, completion: @escaping (Result<Void, Error>) -> Void) {
-        let endpoint = isSignUp ? "/api/verify-otp" : "/api/verify-otp-signIn"
-        guard let url = URL(string: "\(ApiKeys.baseURL)\(endpoint)") else {
-              completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
-              return
-          }
+               let endpoint = isSignUp ? "/api/verify-otp" : "/api/verify-otp-signIn"
+               guard let url = URL(string: "\(ApiKeys.baseURL)\(endpoint)") else {
+               completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
+               return
+    }
           
           var request = URLRequest(url: url)
           request.httpMethod = "POST"
@@ -80,16 +77,13 @@ class AuthService{
                          // Print raw response data for debugging
                          print("Response data: \(String(describing: String(data: data, encoding: .utf8)))")
                          
-                         // Parse JSON response
                          do {
                              if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
                                  // Extract userRole and token from JSON response if available
                                  if let userRole = jsonResponse["userRole"] as? String {
                                      print("User role from response: \(userRole)")
-                                     // Store userRole in UserDefaults
                                      UserDefaults.standard.set(userRole, forKey: "userRole")
                                  }
-                                 
                                  if let token = jsonResponse["token"] as? String {
                                      print("Token from response: \(token)")
                                      // Store token in UserDefaults
@@ -175,7 +169,83 @@ class AuthService{
         let alertController = UIAlertController(title: "Logout", message: "Are you sure you want to logout?", preferredStyle: .alert)
         
         let okAction = UIAlertAction(title: "OK", style: .default) { _ in
-            // Logout implementation
+            guard let url = URL(string: "\(ApiKeys.baseURL)/api/logout") else {
+                print("Invalid URL")
+                return
+            }
+            
+            var request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 10)
+            request.httpMethod = "POST"
+            
+            do {
+                request.httpBody = try JSONEncoder().encode(["phoneNumber": phoneNumber])
+            } catch {
+                print("Failed to encode phone number: \(error)")
+                return
+            }
+            
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            
+            if let token = UserDefaults.standard.string(forKey: "x-auth-token") {
+                request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            }
+            
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                if let error = error {
+                    DispatchQueue.main.async {
+                        self.showSnackBar(context: context, message: "Failed to log out: \(error.localizedDescription)")
+                    }
+                    return
+                }
+                
+                if let response = response as? HTTPURLResponse {
+                    if response.statusCode == 200 {
+                        // Remove sign-in number from data
+                        UserDefaults.standard.removeObject(forKey: "x-auth-token")
+                        UserDefaults.standard.removeObject(forKey: "userPhoneNumber")
+                        UserDefaults.standard.removeObject(forKey: "userRole")
+                        UserDefaults.standard.removeObject(forKey: "phoneNumberSignUp")
+                        UserDefaults.standard.removeObject(forKey: "userName")
+                        UserDefaults.standard.removeObject(forKey: "dateOfBirth")
+                        UserDefaults.standard.removeObject(forKey: "address")
+                        UserDefaults.standard.removeObject(forKey: "phoneNumber")
+                        UserDefaults.standard.set(false, forKey: "isLoggedIn")
+                        UserDefaults.standard.synchronize()
+                        
+                        print("Token removed, transitioning to SignInViwController")
+                        DispatchQueue.main.async{
+                                                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                                                   let signInVC = storyboard.instantiateViewController(withIdentifier: "SignInViwController")
+                                                   signInVC.modalPresentationStyle = .fullScreen // or .overFullScreen, if you want a different effect
+                                                   context.present(signInVC, animated: true, completion: nil)
+
+                                                   self.showSnackBar(context: context, message: "User logged out successfully")
+                        }
+                    } else {
+                        DispatchQueue.main.async {
+                            self.showSnackBar(context: context, message: "Failed to log out: Server responded with status code \(response.statusCode)")
+                        }
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        self.showSnackBar(context: context, message: "Failed to log out: Invalid server response")
+                    }
+                }
+            }.resume()
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.addAction(okAction)
+        alertController.addAction(cancelAction)
+        
+        context.present(alertController, animated: true, completion: nil)
+    }
+    
+    func logOutOTP(phoneNumber: String, context: UIViewController) {
+        let alertController = UIAlertController(title: "Logout", message: "Are you sure you want to logout?", preferredStyle: .alert)
+        
+        let okAction = UIAlertAction(title: "OK", style: .default) { _ in
             guard let url = URL(string: "\(ApiKeys.baseURL)/api/logout") else {
                 print("Invalid URL")
                 return
@@ -254,6 +324,8 @@ class AuthService{
         
         context.present(alertController, animated: true, completion: nil)
     }
+    
+    
     
     //MARK: - ShowSnackBar
     

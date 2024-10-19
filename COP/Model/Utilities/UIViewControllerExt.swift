@@ -1,18 +1,24 @@
-//
-//  UIViewControllerExt.swift
-//  COP
-//
-//  Created by Mac on 06/08/24.
-//
-
 import UIKit
 import MapKit
 
-fileprivate var containerView : UIView!
+fileprivate var containerView: UIView!
 
-extension UIViewController{
+extension UIViewController {
+    private struct AssociatedKeys {
+        // Use UnsafeRawPointer properly by creating a static key
+        static var loadingWorkItem: UInt8 = 0
+    }
     
-    func showLoadingView(mapview : MKMapView){
+    private var loadingWorkItem: DispatchWorkItem? {
+        get {
+            return objc_getAssociatedObject(self, &AssociatedKeys.loadingWorkItem) as? DispatchWorkItem
+        }
+        set {
+            objc_setAssociatedObject(self, &AssociatedKeys.loadingWorkItem, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
+    
+    func showLoadingView(mapview: MKMapView, timeout: TimeInterval = 15) { // 15 seconds timeout by default
         containerView = UIView(frame: mapview.bounds)
         view.addSubview(containerView)
         
@@ -22,7 +28,8 @@ extension UIViewController{
         UIView.animate(withDuration: 0.25) {
             containerView.alpha = 0.8
         }
-        let activityIndicator = UIActivityIndicatorView(style: .large)//gives size
+        
+        let activityIndicator = UIActivityIndicatorView(style: .large)
         containerView.addSubview(activityIndicator)
         
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
@@ -34,14 +41,23 @@ extension UIViewController{
         
         activityIndicator.startAnimating()
         
+        let workItem = DispatchWorkItem { [weak self] in
+            self?.dismissLoadingView()
+        }
+        
+        loadingWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + timeout, execute: workItem)
     }
     
-    func dismissLoadingView(){
-        DispatchQueue.main.async{  // all ui updates in main thread
-            containerView.removeFromSuperview()
+    func dismissLoadingView() {
+        DispatchQueue.main.async {
+            self.loadingWorkItem?.cancel()
+            self.loadingWorkItem = nil
+            containerView?.removeFromSuperview()
             containerView = nil
         }
     }
+
     
     func showEmptyStateView(with message: String, in view: UIView){
         print("show is called")
