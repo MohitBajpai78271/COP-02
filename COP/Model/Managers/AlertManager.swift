@@ -8,7 +8,6 @@ class AlertManager {
     private var isAlertPresented = false
     
     func showAlert(on viewController: UIViewController, message: String) {
-        // Prevent presenting multiple alerts simultaneously
         guard !isAlertPresented else { return }
         
         isAlertPresented = true
@@ -22,7 +21,6 @@ class AlertManager {
             if viewController.isViewLoaded && viewController.view.window != nil {
                 viewController.present(alert, animated: true, completion: nil)
             } else {
-                // Find the top-most view controller to present the alert
                 if let topController = self.topMostViewController() {
                     topController.present(alert, animated: true, completion: nil)
                 }

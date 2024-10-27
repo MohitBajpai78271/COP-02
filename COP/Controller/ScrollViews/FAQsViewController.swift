@@ -13,7 +13,16 @@ class FAQsViewController: UIViewController{
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        setupText()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(false, animated: true)
+    }
+
+    
+    func setupText(){
         let fullTextFaq = """
 
 Frequently Asked Questions (FAQs) for Constable On Patrol App General Questions
@@ -81,7 +90,6 @@ For further questions or support, contact us at ekanshbhushan@gmail.com or +91 9
 By using the COP App, you agree to these Terms and our Privacy Policy. If you have any concerns or queries, please reach out to us
 
 
-
 """
         
         let attributedString = NSMutableAttributedString(string: fullTextFaq)
@@ -121,11 +129,6 @@ By using the COP App, you agree to these Terms and our Privacy Policy. If you ha
         
         FAQText.isEditable = false
         
-    }
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        navigationController?.setNavigationBarHidden(false, animated: true)
     }
     
 }

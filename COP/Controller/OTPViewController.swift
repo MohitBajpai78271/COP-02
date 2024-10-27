@@ -35,7 +35,7 @@ class OTPViewController: UIViewController{
         otpTextFieldSetUp()
         startTimer()
         resendButton.isHidden = true
-        phoneNumber = UserDefaults.standard.string(forKey: "userPhoneNumber") ?? UserDefaults.standard.string(forKey: "phoneNumberSignUp")
+        phoneNumber = UserDefaults.standard.string(forKey: Ud.userPn) ?? UserDefaults.standard.string(forKey: Ud.signupPn)
     }
     
     @objc func dismssVC() {
@@ -66,7 +66,7 @@ class OTPViewController: UIViewController{
     
     private func verifyOtp(phoneNumber: String, otp: String) {
         
-        if let _ = UserDefaults.standard.string(forKey: "x-auth-token") {
+        if let _ = UserDefaults.standard.string(forKey: Ud.token) {
                   showLogoutAlert()
         }else{
             authservice.verifyOtp(phoneNumber: phoneNumber, otp: otp, isSignUp: UserData.shared.isSignup) { result in
@@ -136,7 +136,6 @@ class OTPViewController: UIViewController{
                 if let response = response {
                     if response .success {
                         print("otp resend successfully")
-                        
                     }  else {
                         self.alertHelper.showAlert(on: self, message:  "No response received or data couldn't be decoded")
                     }
@@ -220,13 +219,12 @@ class OTPViewController: UIViewController{
             self.performSegue(withIdentifier: K.seguetoUserDetails , sender: self)
         }else{
             do{
-                UserDefaults.standard.set(true, forKey: "isLoggedIn")
+                UserDefaults.standard.set(true, forKey: Ud.isLoggedIn)
                 UserDefaults.standard.synchronize()
                 
-                let isLoggedIn = UserDefaults.standard.bool(forKey: "isLoggedIn")
-                print("isLoggedIn after setting: \(isLoggedIn)")
+                let isLoggedIn = UserDefaults.standard.bool(forKey: Ud.isLoggedIn)
                 DispatchQueue.main.async {
-                    self.performSegue(withIdentifier: "segueToTab", sender: self)
+                    self.performSegue(withIdentifier: K.segueToTab, sender: self)
                 }
             }
         }

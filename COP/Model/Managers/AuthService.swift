@@ -8,7 +8,7 @@ class AuthService{
     private let storage = UserDefaults.standard
     
      public let userDefaults = UserDefaults.standard
-     public let signedInKey = "isSignedIn"
+    public let signedInKey = K.isSignedIn
     
      public init() {}
      
@@ -35,11 +35,9 @@ class AuthService{
                         let otpResponse = try JSONDecoder().decode(OTPResponse.self, from: data)
                         completion(otpResponse, nil)
                     } catch let decodeError {
-                        print("Decoding Error: \(decodeError)")
                         completion(nil, decodeError)
                     }
                 } else {
-                    print("No data in response")
                     completion(nil, NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "No data in response"]))
                 }
             }
@@ -63,7 +61,6 @@ class AuthService{
           
           let task = session.dataTask(with: request) { data, response, error in
               if let error = error {
-                  print("Invalid response received.")
                   completion(.failure(error))
                   return
               }
@@ -79,34 +76,23 @@ class AuthService{
                          
                          do {
                              if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                                 // Extract userRole and token from JSON response if available
                                  if let userRole = jsonResponse["userRole"] as? String {
-                                     print("User role from response: \(userRole)")
-                                     UserDefaults.standard.set(userRole, forKey: "userRole")
+                                     UserDefaults.standard.set(userRole, forKey: Ud.userRole)
                                  }
                                  if let token = jsonResponse["token"] as? String {
-                                     print("Token from response: \(token)")
-                                     // Store token in UserDefaults
-                                     UserDefaults.standard.set(token, forKey: "x-auth-token")
+                                     UserDefaults.standard.set(token, forKey: Ud.token)
                                  }
                                  if let userName = jsonResponse["userName"] as? String {
-                                     print("Token from response: \(userName)")
-                                     // Store token in UserDefaults
-                                     UserDefaults.standard.set(userName, forKey: "userName")
+                                     UserDefaults.standard.set(userName, forKey: Ud.userName)
                                  }
                                  if let dateOfBirth = jsonResponse["dateOfBirth"] as? String {
-                                     print("Token from response: \(dateOfBirth)")
-                                     // Store token in UserDefaults
-                                     UserDefaults.standard.set(dateOfBirth, forKey: "dateOfBirth")
+                                     UserDefaults.standard.set(dateOfBirth, forKey: Ud.dob)
                                  }
                                  if let address = jsonResponse["address"] as? String {
-                                     print("Token from response: \(address)")
-                                     // Store token in UserDefaults
-                                     UserDefaults.standard.set(address, forKey: "address")
+                                     UserDefaults.standard.set(address, forKey: Ud.address)
                                  }
                                  if let phoneNumber = jsonResponse["phoneNumber"] as? String{
-                                     print("Token from response : \(phoneNumber)")
-                                     UserDefaults.standard.set(phoneNumber, forKey: "phoneNumber")
+                                     UserDefaults.standard.set(phoneNumber, forKey: Ud.pn)
                                  }
                                  
                              }
@@ -170,7 +156,6 @@ class AuthService{
         
         let okAction = UIAlertAction(title: "OK", style: .default) { _ in
             guard let url = URL(string: "\(ApiKeys.baseURL)/api/logout") else {
-                print("Invalid URL")
                 return
             }
             
@@ -186,7 +171,7 @@ class AuthService{
             
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             
-            if let token = UserDefaults.standard.string(forKey: "x-auth-token") {
+            if let token = UserDefaults.standard.string(forKey: Ud.token) {
                 request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
             }
             
@@ -201,24 +186,22 @@ class AuthService{
                 if let response = response as? HTTPURLResponse {
                     if response.statusCode == 200 {
                         // Remove sign-in number from data
-                        UserDefaults.standard.removeObject(forKey: "x-auth-token")
-                        UserDefaults.standard.removeObject(forKey: "userPhoneNumber")
-                        UserDefaults.standard.removeObject(forKey: "userRole")
-                        UserDefaults.standard.removeObject(forKey: "phoneNumberSignUp")
-                        UserDefaults.standard.removeObject(forKey: "userName")
-                        UserDefaults.standard.removeObject(forKey: "dateOfBirth")
-                        UserDefaults.standard.removeObject(forKey: "address")
-                        UserDefaults.standard.removeObject(forKey: "phoneNumber")
-                        UserDefaults.standard.set(false, forKey: "isLoggedIn")
+                        UserDefaults.standard.removeObject(forKey: Ud.token)
+                        UserDefaults.standard.removeObject(forKey: Ud.userPn)
+                        UserDefaults.standard.removeObject(forKey: Ud.userRole)
+                        UserDefaults.standard.removeObject(forKey: Ud.signupPn)
+                        UserDefaults.standard.removeObject(forKey: Ud.userName)
+                        UserDefaults.standard.removeObject(forKey: Ud.dob)
+                        UserDefaults.standard.removeObject(forKey: Ud.address)
+                        UserDefaults.standard.removeObject(forKey: Ud.pn)
+                        UserDefaults.standard.set(false, forKey: Ud.isLoggedIn)
                         UserDefaults.standard.synchronize()
                         
-                        print("Token removed, transitioning to SignInViwController")
                         DispatchQueue.main.async{
                                                  let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                                                   let signInVC = storyboard.instantiateViewController(withIdentifier: "SignInViwController")
+                            let signInVC = storyboard.instantiateViewController(withIdentifier: K.signinView)
                                                    signInVC.modalPresentationStyle = .fullScreen // or .overFullScreen, if you want a different effect
                                                    context.present(signInVC, animated: true, completion: nil)
-
                                                    self.showSnackBar(context: context, message: "User logged out successfully")
                         }
                     } else {
@@ -235,96 +218,10 @@ class AuthService{
         }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        
         alertController.addAction(okAction)
         alertController.addAction(cancelAction)
-        
         context.present(alertController, animated: true, completion: nil)
     }
-    
-    func logOutOTP(phoneNumber: String, context: UIViewController) {
-        let alertController = UIAlertController(title: "Logout", message: "Are you sure you want to logout?", preferredStyle: .alert)
-        
-        let okAction = UIAlertAction(title: "OK", style: .default) { _ in
-            guard let url = URL(string: "\(ApiKeys.baseURL)/api/logout") else {
-                print("Invalid URL")
-                return
-            }
-            
-            var request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 10)
-            request.httpMethod = "POST"
-            
-            do {
-                request.httpBody = try JSONEncoder().encode(["phoneNumber": phoneNumber])
-            } catch {
-                print("Failed to encode phone number: \(error)")
-                return
-            }
-            
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            
-            if let token = UserDefaults.standard.string(forKey: "x-auth-token") {
-                request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-            }
-            
-            URLSession.shared.dataTask(with: request) { data, response, error in
-                if let error = error {
-                    DispatchQueue.main.async {
-                        self.showSnackBar(context: context, message: "Failed to log out: \(error.localizedDescription)")
-                    }
-                    return
-                }
-                
-                if let response = response as? HTTPURLResponse {
-                    if response.statusCode == 200 {
-                        // Remove sign-in number from data
-                        UserDefaults.standard.removeObject(forKey: "x-auth-token")
-                        UserDefaults.standard.removeObject(forKey: "userPhoneNumber")
-                        UserDefaults.standard.removeObject(forKey: "userRole")
-                        UserDefaults.standard.removeObject(forKey: "phoneNumberSignUp")
-                        UserDefaults.standard.removeObject(forKey: "userName")
-                        UserDefaults.standard.removeObject(forKey: "dateOfBirth")
-                        UserDefaults.standard.removeObject(forKey: "address")
-                        UserDefaults.standard.removeObject(forKey: "phoneNumber")
-                        UserDefaults.standard.set(false, forKey: "isLoggedIn")
-                        UserDefaults.standard.synchronize()
-                        
-                        print("Token removed, transitioning to SignInViwController")
-                        
-                        // Go back to signIn page
-                        DispatchQueue.main.async {
-                            if let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-                               let window = appDelegate.window {
-                                let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                                let signInVC = storyboard.instantiateViewController(withIdentifier: "SignInViwController")
-                                window.rootViewController = UINavigationController(rootViewController: signInVC)
-                                window.makeKeyAndVisible()
-                                context.performSegue(withIdentifier: K.logoutSegue, sender: context)
-                            }
-                            
-                            self.showSnackBar(context: context, message: "User logged out successfully")
-                        }
-                    } else {
-                        DispatchQueue.main.async {
-                            self.showSnackBar(context: context, message: "Failed to log out: Server responded with status code \(response.statusCode)")
-                        }
-                    }
-                } else {
-                    DispatchQueue.main.async {
-                        self.showSnackBar(context: context, message: "Failed to log out: Invalid server response")
-                    }
-                }
-            }.resume()
-        }
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        
-        alertController.addAction(okAction)
-        alertController.addAction(cancelAction)
-        
-        context.present(alertController, animated: true, completion: nil)
-    }
-    
     
     
     //MARK: - ShowSnackBar
@@ -402,8 +299,8 @@ class AuthService{
                     if let token = json["token"] as? String, let userRole = json["userRole"] as? String  {
                         
 
-                        UserDefaults.standard.set(token, forKey: "x-auth-token")
-                        UserDefaults.standard.set(userRole, forKey: "userRole")
+                        UserDefaults.standard.set(token, forKey: Ud.token)
+                        UserDefaults.standard.set(userRole, forKey: Ud.userRole)
                         
                         DispatchQueue.main.async {
                             self.showSnackBar(context: context, message: "User created successfully")
@@ -424,67 +321,11 @@ class AuthService{
         
         task.resume()
         }
+    //MARK: - UpdateData
     
-    //MARK: - ???
-    
-    func getUserData(context: UIViewController, completion: @escaping (Result<[String: Any], Error>) -> Void) {
-        guard let token = UserDefaults.standard.string(forKey: "x-auth-token") else {
-            completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "No token found"])))
-            return
-        }
-
-        let url = URL(string: "\(ApiKeys.baseURL)/users/user-tokenIsValid")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "GET"
-        request.setValue(token, forHTTPHeaderField: "x-auth-token")
-
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                completion(.failure(error))
-                print(error.localizedDescription)
-                return
-            }
-
-            guard let data = data, let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-                completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to fetch user data"])))
-                return
-            }
-
-            do {
-                if let userData = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                    // Save the user data to UserDefaults
-                    print("User data received")
-                    if let phoneNumber = userData["phoneNumber"] as? String {
-                        UserDefaults.standard.set(phoneNumber, forKey: "phoneNumber")
-                    }
-                    if let userName = userData["userName"] as? String {
-                        UserDefaults.standard.set(userName, forKey: "userName")
-                    }
-                    if let address = userData["address"] as? String {
-                        UserDefaults.standard.set(address, forKey: "address")
-                    }
-                    if let dateOfBirth = userData["dateOfBirth"] as? String {
-                        UserDefaults.standard.set(dateOfBirth, forKey: "dateOfBirth")
-                    }
-                    UserDefaults.standard.synchronize()
-                    
-                    completion(.success(userData))
-                } else {
-                    completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid user data"])))
-                    print("Not able to find")
-                }
-            } catch {
-                completion(.failure(error))
-                print("can't try")
-                print(error.localizedDescription)
-            }
-        }
-
-        task.resume()
-    }
     func updateUser(context: UIViewController, phoneNumber: String, userName: String, address: String, dateOfBirth: String, completion: @escaping (Result<Void, Error>) -> Void) {
         
-        guard let token = UserDefaults.standard.string(forKey: "x-auth-token") else {
+        guard let token = UserDefaults.standard.string(forKey: Ud.token) else {
             showSnackBar(context: context, message: "No token found")
             return
         }
@@ -493,7 +334,7 @@ class AuthService{
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json; charset=UTF-8", forHTTPHeaderField: "Content-Type")
-        request.setValue(token, forHTTPHeaderField: "x-auth-token")
+        request.setValue(token, forHTTPHeaderField: Ud.token)
 
         let updateData: [String: Any] = [
             "phoneNumber": phoneNumber,

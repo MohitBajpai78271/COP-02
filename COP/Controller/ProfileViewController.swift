@@ -17,8 +17,8 @@ class ProfileViewController: UIViewController, UITextFieldDelegate{
     @IBOutlet weak var editView: UIButton!
     
     var buttonImageNames: [UIButton: String] = [:]
-    let image1 = "square.and.pencil"
-    let image2 = "square.and.arrow.down.fill"
+    let image1 = K.image1
+    let image2 = K.image2
     let authService = AuthService()
     let doAlert = AlertManager.shared
     
@@ -26,8 +26,14 @@ class ProfileViewController: UIViewController, UITextFieldDelegate{
         let initialImage = UIImage(systemName: image1)
         editView.setImage(initialImage, for: .normal)
         buttonImageNames[editView] = image1
-        print("Button setup with image: \(image1)")
-        enableTextFields(false)
+
+        editView.backgroundColor = UIColor.systemBlue.withAlphaComponent(0.2)
+        editView.layer.cornerRadius = 20
+        editView.tintColor = .systemBlue
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.navigationBar.isHidden = true
     }
     
     let datePicker = UIDatePicker()
@@ -48,10 +54,23 @@ class ProfileViewController: UIViewController, UITextFieldDelegate{
         setupDatePicker()
       
         setupToolBar()
+        setupImageViewBackground()
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tapGesture)
         
+    }
+    
+    
+    
+    func setupImageViewBackground() {
+        let backgroundImage = UIImageView(frame: UIScreen.main.bounds)
+        backgroundImage.image = UIImage(named: "MapView")
+        backgroundImage.contentMode = .scaleAspectFill
+        backgroundImage.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        backgroundImage.alpha = 0.2
+        view.addSubview(backgroundImage)
+        view.sendSubviewToBack(backgroundImage)
     }
     
     func setupToolBar(){
@@ -75,16 +94,19 @@ class ProfileViewController: UIViewController, UITextFieldDelegate{
          PoliceStation.delegate = self
         
         
-        if let userName = UserDefaults.standard.string(forKey: "userName") {
+        if let userName = UserDefaults.standard.string(forKey: Ud.userName) {
             UserName.text = userName
         }
-        if let phoneNumber = UserDefaults.standard.string(forKey: "phoneNumber"), !phoneNumber.isEmpty {
+        if let phoneNumberSignup = UserDefaults.standard.string(forKey: Ud.signupPn), !phoneNumberSignup.isEmpty{
+            MobileNo.text = phoneNumberSignup
+        }
+        if let phoneNumber = UserDefaults.standard.string(forKey: Ud.pn), !phoneNumber.isEmpty {
             MobileNo.text = phoneNumber
         }
-        if let dateOfBirth = UserDefaults.standard.string(forKey: "dateOfBirth") {
+        if let dateOfBirth = UserDefaults.standard.string(forKey: Ud.dob) {
             DateOfBirth.text = dateOfBirth
         }
-        if let address = UserDefaults.standard.string(forKey: "address") {
+        if let address = UserDefaults.standard.string(forKey: Ud.address) {
             PoliceStation.text = address
         }
         
@@ -101,7 +123,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate{
              if currentImageName == image1 {
                  toggleButtonImage(to: image2, for: sender)
                  enableTextFields(true)
-                 
+                 showToast(message: "You can now edit the fields.", duration: 2.0)
              } else {
                  showAlertToSaveChanges()
                  toggleButtonImage(to: image1, for: sender)
@@ -116,6 +138,39 @@ class ProfileViewController: UIViewController, UITextFieldDelegate{
          DateOfBirth.inputView = datePicker
          DateOfBirth.inputAccessoryView = createToolbar()
      }
+    
+    func showToast(message: String, duration: TimeInterval) {
+        let toastLabel = UILabel()
+        toastLabel.text = message
+        toastLabel.textColor = .white
+        toastLabel.textAlignment = .center
+        toastLabel.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        toastLabel.alpha = 1.0
+        toastLabel.layer.cornerRadius = 10
+        toastLabel.clipsToBounds = true
+        toastLabel.numberOfLines = 0
+        toastLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(toastLabel)
+        
+        NSLayoutConstraint.activate([
+            toastLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            toastLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -100),
+            toastLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 300),
+            toastLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 40)
+        ])
+        
+        UIView.animate(withDuration: 0.5, animations: {
+            toastLabel.alpha = 1.0
+        }) { _ in
+            UIView.animate(withDuration: 0.5, delay: duration, options: .curveEaseOut, animations: {
+                toastLabel.alpha = 0.0
+            }) { _ in
+                toastLabel.removeFromSuperview()
+            }
+        }
+    }
+
      
     func createToolbar() -> UIToolbar {
            let toolbar = UIToolbar()
@@ -158,7 +213,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate{
           let newImage = UIImage(systemName: newImageName)
           button.setImage(newImage, for: .normal)
           buttonImageNames[button] = newImageName
-          print("Updated image name: \(newImageName)") // Debugging
       }
 
       func enableTextFields(_ enable: Bool) {
@@ -180,17 +234,17 @@ class ProfileViewController: UIViewController, UITextFieldDelegate{
                      return
                  }
               
-              UserDefaults.standard.set(phoneNumber, forKey: "phoneNumber")
-              UserDefaults.standard.set(userName, forKey: "userName")
-              UserDefaults.standard.set(address, forKey: "address")
-              UserDefaults.standard.set(dateOfBirth, forKey: "dateOfBirth")
+              UserDefaults.standard.set(phoneNumber, forKey: Ud.pn)
+              UserDefaults.standard.set(userName, forKey: Ud.pn)
+              UserDefaults.standard.set(address, forKey: Ud.address)
+              UserDefaults.standard.set(dateOfBirth, forKey: Ud.dob)
               UserDefaults.standard.synchronize()
               
               self.authService.updateUser(context: self, phoneNumber: phoneNumber, userName: userName, address: address, dateOfBirth: dateOfBirth) { result in
                   DispatchQueue.main.async{
                   switch result {
                   case .success:
-                         print("Updated success!")
+                      self.showToast(message: "Changes have been saved.", duration: 2.0)
                   case .failure(let error):
                       print("Its a failure : \(error.localizedDescription)")
                   }
@@ -216,15 +270,12 @@ extension ProfileViewController: UIPickerViewDelegate,UIPickerViewDataSource{
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return options.count
     }
-
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return options[row]
     }
-
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         PoliceStation.text = options[row]
     }
-  
 }
 
 extension UITextField {
@@ -242,14 +293,16 @@ extension UITextField {
         ])
 
         if traitCollection.userInterfaceStyle == .dark {
-               textColor = .white
-           } else {
-               textColor = .black
-           }
+            textColor = .white
+        } else {
+            textColor = .black
+        }
         layer.borderWidth = 1
         layer.borderColor = UIColor.lightGray.cgColor
         backgroundColor = .systemBackground
-        
+        layer.cornerRadius = 16 
+        layer.masksToBounds = true
+
         self.placeholder = ""
 
         addTarget(self, action: #selector(editingDidBegin), for: .editingDidBegin)
@@ -258,18 +311,18 @@ extension UITextField {
 
     @objc private func editingDidBegin() {
         guard let placeholderLabel = subviews.compactMap({ $0 as? UILabel }).first else { return }
-          UIView.animate(withDuration: 0.3) {
-              placeholderLabel.textColor = .systemBlue
-              self.layer.borderColor = UIColor.systemBlue.cgColor
-          }
+        UIView.animate(withDuration: 0.3) {
+            placeholderLabel.textColor = .systemBlue
+            self.layer.borderColor = UIColor.systemBlue.cgColor
+        }
     }
 
     @objc private func editingDidEnd() {
         guard let placeholderLabel = subviews.compactMap({ $0 as? UILabel }).first else { return }
-          UIView.animate(withDuration: 0.3) {
-              placeholderLabel.textColor = .lightGray
-              self.layer.borderColor = UIColor.lightGray.cgColor
-          }
-     }
+        UIView.animate(withDuration: 0.3) {
+            placeholderLabel.textColor = .lightGray
+            self.layer.borderColor = UIColor.lightGray.cgColor
+        }
+    }
 }
 

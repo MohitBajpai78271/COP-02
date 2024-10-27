@@ -10,9 +10,9 @@ import Foundation
 struct LocationOfUser: Codable {
     let id: String
     let userId: String
-    let phoneNumber: String
-    let latitude: Double
-    let longitude: Double
+    let phoneNumber: String?
+    let latitude: Double?
+    let longitude: Double?
     let timestamp: String // Correct the key to match the JSON response
     let v: Int
 

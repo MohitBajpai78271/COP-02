@@ -16,27 +16,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
-           
-        // 1. Create a UIWindow with the windowScene
         window = UIWindow(windowScene: windowScene)
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
 
-        // 2. Check if the user is logged in
-        let isLoggedIn = UserDefaults.standard.bool(forKey: "isLoggedIn")
+        let isLoggedIn = UserDefaults.standard.bool(forKey: Ud.isLoggedIn)
         let initialViewController: UIViewController
         
-        // 3. Depending on login status, decide the initial view controller
         if isLoggedIn {
-            // User is logged in, show TabBarController (or other view controllers)
             initialViewController = storyboard.instantiateViewController(withIdentifier: K.tabbarView)
         } else {
-            // User is not logged in, show SignInViewController embedded in a UINavigationController
             let signInVC = storyboard.instantiateViewController(withIdentifier: K.signinView) as! SignInViwController
             let navController = UINavigationController(rootViewController: signInVC)
             initialViewController = navController
         }
-        
-        // 4. Set the initial view controller as the root and make it visible
         window?.rootViewController = initialViewController
         window?.makeKeyAndVisible()
     }

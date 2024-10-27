@@ -9,5 +9,5 @@ import UIKit
 
 struct ApiKeys{
     static let baseURL = "http://93.127.172.217:4000"
-    static let baseURL2 = "http://93.127.172.217:5000"
+    static let baseURL2 = "http://93.127.172.217:2005"
 }
