@@ -18,22 +18,21 @@ class AdminViewController: UIViewController{
     let emptyStateView = UIView()
     let messageLabel = UILabel()
     let reloadButton = UIButton(type: .system)
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.title = "Admin"
-        
-        self.navigationController?.navigationBar.prefersLargeTitles = true
-        
         configureSearchController()
         filteredActiveUsers = activeUsers
-        
+        setupReloadButton()
         setupTableView()
         fetchActiveUsers()
-//        setupConstraints()
-        
         setupEmptyStateView()
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.navigationBar.prefersLargeTitles = true
     }
     
     func setupEmptyStateView() {
@@ -47,8 +46,7 @@ class AdminViewController: UIViewController{
         messageLabel.textAlignment = .center
         messageLabel.font = UIFont.systemFont(ofSize: 18, weight: .medium)
         messageLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Configure reload button
+    
         reloadButton.setTitle("Reload", for: .normal)
         reloadButton.setTitleColor(.white, for: .normal)
         reloadButton.backgroundColor = .systemBlue
@@ -57,12 +55,8 @@ class AdminViewController: UIViewController{
         reloadButton.addTarget(self, action: #selector(reloadButtonTapped), for: .touchUpInside)
         reloadButton.translatesAutoresizingMaskIntoConstraints = false
         
-        
-        // Add label and button to the empty state view
         emptyStateView.addSubview(messageLabel)
         emptyStateView.addSubview(reloadButton)
-        
-        // Add constraints for label and button
         NSLayoutConstraint.activate([
             messageLabel.centerYAnchor.constraint(equalTo: emptyStateView.centerYAnchor, constant: -20),
             messageLabel.leadingAnchor.constraint(equalTo: emptyStateView.leadingAnchor, constant: 20),
@@ -76,6 +70,27 @@ class AdminViewController: UIViewController{
     
         view.addSubview(emptyStateView)
     }
+    
+    private func setupReloadButton() {
+        let reloadButton = UIButton(type: .system)
+        reloadButton.setTitle("Reload", for: .normal)
+        reloadButton.setTitleColor(.white, for: .normal)
+        reloadButton.backgroundColor = UIColor.systemBlue
+        reloadButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
+        reloadButton.layer.cornerRadius = 8
+        reloadButton.clipsToBounds = true
+
+        reloadButton.addTarget(self, action: #selector(reloadTableViewTapped), for: .touchUpInside)
+        reloadButton.sizeToFit()
+        reloadButton.frame.size.width += 20
+
+        let barButtonItem = UIBarButtonItem(customView: reloadButton)
+        self.navigationItem.rightBarButtonItem = barButtonItem
+    }
+
+       @objc private func reloadTableViewTapped() {
+           fetchActiveUsers()
+       }
     
     @objc func reloadButtonTapped() {
         fetchActiveUsers()
@@ -98,7 +113,7 @@ class AdminViewController: UIViewController{
         searchController.obscuresBackgroundDuringPresentation = false
         navigationItem.searchController = searchController
     }
-//    
+    
     //MARK: - Constraints
     
     private func setupConstraints() {
@@ -108,18 +123,19 @@ class AdminViewController: UIViewController{
   //  MARK: - Fetch ActiveUsersData
     
         func fetchActiveUsers() {
-    
+            showLoadingView2(tableView: tableView)
             fetchActiveUserData { [weak self] result in
                 guard let self = self else{return}
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let activeUsers):
+                        self.dismissLoadingView()
                         print("Received active users data: \(activeUsers)")
                         self.activeUsers = activeUsers
                         self.filteredActiveUsers = activeUsers
                         print("Active users count: \(self.activeUsers.count)")
     
-                        if self.activeUsers.isEmpty {
+                        if self.activeUsers.count == 0 {
                             print("show  runs")
                             self.emptyStateView.isHidden = false
                             return
@@ -190,13 +206,29 @@ extension AdminViewController: UITableViewDataSource,UITableViewDelegate{
     }
     
     @objc func cellTapped(_ gesture: UITapGestureRecognizer) {
-        let indexPath = tableView.indexPath(for: gesture.view as! MessageCell)!
-        let selectedUser = activeUsers[indexPath.row]
-        self.performSegue(withIdentifier: K.segueToLocation, sender: selectedUser.mobileNumber)
+        guard let cell = gesture.view as? MessageCell,
+              let indexPath = tableView.indexPath(for: cell) else { return }
+        
+        let selectedUser  = filteredActiveUsers[indexPath.row] // Use filteredActiveUsers instead of activeUsers
+        let phoneNumber = selectedUser .mobileNumber // Get the phone number from the selected user
+        
+        // Fetch the location data before performing the segue
+        fetchUserLocation(phoneNumber: phoneNumber) { [weak self] result in
+            switch result {
+            case .success(let locationData):
+                // Perform the segue and pass the location data
+                DispatchQueue.main.async {
+                    self?.performSegue(withIdentifier: K.segueToLocation, sender: locationData)
+                }
+            case .failure(let error):
+                print("Error fetching location: \(error)")
+            }
+        }
     }
     
     func fetchUserLocation(phoneNumber: String, completion: @escaping (Result<LocationOfUser, Error>) -> Void) {
         let url = "\(ApiKeys.baseURL)/users-location"
+        print(url)
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 30
         let parameters: [String: Any] = ["phoneNumber": phoneNumber]
@@ -231,8 +263,9 @@ extension AdminViewController: UITableViewDataSource,UITableViewDelegate{
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == K.segueToLocation {
             if let destinationVC = segue.destination as? LocationViewController,
-               let phoneNumber = sender as? String {
-                destinationVC.phoneNumber = phoneNumber
+               let locationData = sender as? LocationOfUser  {
+                destinationVC.locationData = locationData
+                destinationVC.phoneNumber = locationData.phoneNumber
             }
         }
     }

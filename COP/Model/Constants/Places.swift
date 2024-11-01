@@ -8,5 +8,5 @@
 import Foundation
 
 struct Places{
-    static let crimesLocation = ["ALIPUR","BAWANA","BHALSWA DAIRY","NARELA","NARELA Industrial Area","SAMAPUR BADLI","SHAHBAD DAIRY","SWAROOP NAGAR"]
+    static let crimesLocation = ["ALIPUR","BAWANA","BHALSWA DAIRY","NARELA","NARELA Industrial Area","SAMAYPUR BADLI","SHAHBAD DAIRY","SWAROOP NAGAR"]
 }

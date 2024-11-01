@@ -18,7 +18,7 @@ class AboutUsViewController: UIViewController{
 
 Introduction to the Constable On Patrol (COP) App
 
-The Constable On Patrol (COP) is a cutting-edge Android application developed in
+The Constable On Patrol (COP) is a cutting-edge Android and iOS application developed in
 collaboration with the Delhi Police to enhance foot patrolling and improve public safety in
 Delhi. The app is designed to provide comprehensive tools for constables and top officials,
 streamlining operations and enabling data-driven decision-making.

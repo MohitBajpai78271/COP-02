@@ -18,11 +18,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: windowScene)
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-
         let isLoggedIn = UserDefaults.standard.bool(forKey: Ud.isLoggedIn)
         let initialViewController: UIViewController
-        
-        if isLoggedIn {
+        if isLoggedIn{
+            print(isLoggedIn)
             initialViewController = storyboard.instantiateViewController(withIdentifier: K.tabbarView)
         } else {
             let signInVC = storyboard.instantiateViewController(withIdentifier: K.signinView) as! SignInViwController

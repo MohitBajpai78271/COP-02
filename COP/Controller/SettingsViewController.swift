@@ -46,4 +46,9 @@ class SettingsViewController: UIViewController{
         phoneNumber = UserDefaults.standard.string(forKey: Ud.userPn) ?? UserDefaults.standard.string(forKey: Ud.signupPn)
         authService.logOut(phoneNumber: phoneNumber!, context: self)
     }
+    @IBAction func editProfileTapped(_ sender: UIButton) {
+        if let tabBarController = self.tabBarController {
+            tabBarController.selectedIndex = 2
+        }
+    }
 }

@@ -65,40 +65,51 @@ class OTPViewController: UIViewController{
     }
     
     private func verifyOtp(phoneNumber: String, otp: String) {
-        
-        if let _ = UserDefaults.standard.string(forKey: Ud.token) {
-                  showLogoutAlert()
-        }else{
-            authservice.verifyOtp(phoneNumber: phoneNumber, otp: otp, isSignUp: UserData.shared.isSignup) { result in
-                switch result {
-                case .success:
-                    DispatchQueue.main.async {
-                        self.otpVerification = true
-                        if self.otpVerification{
-                            self.handleOTPVerification()
-                        }else{
-                            print("otp verification failed")
-                        }
-                    }
-                case .failure(let error):
-                    DispatchQueue.main.async {
-                        self.alertHelper.showAlert(on: self, message: error.localizedDescription)
-                    }
+        authservice.verifyOtp(
+               phoneNumber: phoneNumber,
+               otp: otp,
+               isSignUp: UserData.shared.isSignup,
+               context: self,
+               showLogoutAlert: { [weak self] in
+                   let countryCode = "+91"
+                   if(phoneNumber.hasPrefix(countryCode)){
+                       let localNumber = phoneNumber.replacingOccurrences(of: countryCode, with: "")
+                       self?.showLogoutAlert(phoneNumber: localNumber) // Call the showLogoutAlert function
+                   }
+               }
+           ) { [weak self] result in
+               switch result {
+               case .success:
+                   DispatchQueue.main.async {
+                       self?.otpVerification = true
+                       if self?.otpVerification == true {
+                           self?.handleOTPVerification()
+                       } else {
+                           print("OTP verification failed")
+                       }
+                   }
+               case .failure(let error):
+                   DispatchQueue.main.async {
+                       self?.alertHelper.showAlert(on: self!, message: error.localizedDescription)
+                   }
+               }
+           }
+     }
+    
+    func showLogoutAlert(phoneNumber : String) {
+            DispatchQueue.main.async {
+                let alert = UIAlertController(title: "Confirm Logout", message: "User  might be logged in on another device. Please logout from the previous device or contact admin.", preferredStyle: .alert)
+    
+                let logoutAction = UIAlertAction(title: "Logout", style: .destructive) { _ in
+                    self.authservice.logOut(phoneNumber: phoneNumber,context: self)
                 }
+                alert.addAction(logoutAction)
+                alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+    
+                self.present(alert, animated: true, completion: nil)
             }
         }
-    }
-    
-    func showLogoutAlert() {
-           let alert = UIAlertController(   title: "Confirm Logout",
-                                         message: "Are you sure you want to logout?",
-                                         preferredStyle: .alert)
-           alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-           alert.addAction(UIAlertAction(title: "Logout", style: .destructive, handler: { _ in
-               self.handleLogout()
-           }))
-           self.present(alert, animated: true, completion: nil)
-       }
+
     
     func handleLogout(){
         AuthService.shared.logOut(phoneNumber: phoneNumber!, context: self)
@@ -221,8 +232,6 @@ class OTPViewController: UIViewController{
             do{
                 UserDefaults.standard.set(true, forKey: Ud.isLoggedIn)
                 UserDefaults.standard.synchronize()
-                
-                let isLoggedIn = UserDefaults.standard.bool(forKey: Ud.isLoggedIn)
                 DispatchQueue.main.async {
                     self.performSegue(withIdentifier: K.segueToTab, sender: self)
                 }

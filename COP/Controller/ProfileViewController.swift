@@ -47,7 +47,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate{
         pickerView = UIPickerView()
         pickerView.delegate = self
         pickerView.dataSource = self
-        
+        MobileNo.keyboardType = .numberPad
         PoliceStation.inputView = pickerView
         
         setupButton()
@@ -127,6 +127,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate{
              } else {
                  showAlertToSaveChanges()
                  toggleButtonImage(to: image1, for: sender)
+                 enableTextFields(false)
              }
          }
     
@@ -233,9 +234,8 @@ class ProfileViewController: UIViewController, UITextFieldDelegate{
                   self.doAlert.showAlert(on: self, message: "Please fill in all fields")
                      return
                  }
-              
               UserDefaults.standard.set(phoneNumber, forKey: Ud.pn)
-              UserDefaults.standard.set(userName, forKey: Ud.pn)
+              UserDefaults.standard.set(userName, forKey: Ud.userName)
               UserDefaults.standard.set(address, forKey: Ud.address)
               UserDefaults.standard.set(dateOfBirth, forKey: Ud.dob)
               UserDefaults.standard.synchronize()
@@ -245,6 +245,8 @@ class ProfileViewController: UIViewController, UITextFieldDelegate{
                   switch result {
                   case .success:
                       self.showToast(message: "Changes have been saved.", duration: 2.0)
+                      self.enableTextFields(false)
+                      print("It is done")
                   case .failure(let error):
                       print("Its a failure : \(error.localizedDescription)")
                   }
@@ -254,7 +256,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate{
           
           let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in
               self.toggleButtonImage(to: self.image1, for: self.editView)
-              self.enableTextFields(true)
+              self.enableTextFields(false)
           }
 
           alert.addAction(okAction)

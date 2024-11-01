@@ -29,16 +29,17 @@
 		043E5A0B2C4D5A5900757A63 /* CrimeAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043E59EF2C4D5A5900757A63 /* CrimeAnnotation.swift */; };
 		043E5A0C2C4D5A5900757A63 /* CrimesAndPoliceStations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043E59F02C4D5A5900757A63 /* CrimesAndPoliceStations.swift */; };
 		043E5A0D2C4D5A5900757A63 /* dropDownButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043E59F12C4D5A5900757A63 /* dropDownButton.swift */; };
-		043E5A0F2C4D5A5900757A63 /* OSMResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043E59F32C4D5A5900757A63 /* OSMResponse.swift */; };
 		043E5A102C4D5A5900757A63 /* OTPResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043E59F42C4D5A5900757A63 /* OTPResponse.swift */; };
 		043E5A112C4D5A5900757A63 /* UserData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043E59F52C4D5A5900757A63 /* UserData.swift */; };
 		043E5A122C4D5A5900757A63 /* UserProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043E59F62C4D5A5900757A63 /* UserProvider.swift */; };
 		043E5A132C4D5A5900757A63 /* VerifyOTPResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043E59F72C4D5A5900757A63 /* VerifyOTPResponse.swift */; };
 		043E5A152C4D5A5900757A63 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 043E59FB2C4D5A5900757A63 /* Main.storyboard */; };
 		043E5A1A2C4ECE6B00757A63 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 043E5A192C4ECE6B00757A63 /* User.swift */; };
+		0463F7252CCF8C58001CD235 /* LogoutResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0463F7242CCF8C58001CD235 /* LogoutResponse.swift */; };
 		047A56BF2C6342F500E92BA0 /* AlertManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047A56BE2C6342F500E92BA0 /* AlertManager.swift */; };
 		047A56C42C6351E000E92BA0 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 047A56C32C6351E000E92BA0 /* Alamofire */; };
 		047A56C92C636B3000E92BA0 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047A56C82C636B3000E92BA0 /* EmptyStateView.swift */; };
+		047CC6702CCEB3CB008CCBAC /* CustomAnnotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047CC66F2CCEB3CB008CCBAC /* CustomAnnotation.swift */; };
 		047D22232C4FFF4A00E7C4E5 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047D22222C4FFF4A00E7C4E5 /* Messages.swift */; };
 		047D22252C500AEE00E7C4E5 /* MessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047D22242C500AEE00E7C4E5 /* MessageCell.swift */; };
 		048FEDB52CCDEC3A00AE84EE /* Places.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048FEDB42CCDEC3A00AE84EE /* Places.swift */; };
@@ -89,15 +90,16 @@
 		043E59EF2C4D5A5900757A63 /* CrimeAnnotation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrimeAnnotation.swift; sourceTree = "<group>"; };
 		043E59F02C4D5A5900757A63 /* CrimesAndPoliceStations.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrimesAndPoliceStations.swift; sourceTree = "<group>"; };
 		043E59F12C4D5A5900757A63 /* dropDownButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = dropDownButton.swift; sourceTree = "<group>"; };
-		043E59F32C4D5A5900757A63 /* OSMResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OSMResponse.swift; sourceTree = "<group>"; };
 		043E59F42C4D5A5900757A63 /* OTPResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OTPResponse.swift; sourceTree = "<group>"; };
 		043E59F52C4D5A5900757A63 /* UserData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserData.swift; sourceTree = "<group>"; };
 		043E59F62C4D5A5900757A63 /* UserProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserProvider.swift; sourceTree = "<group>"; };
 		043E59F72C4D5A5900757A63 /* VerifyOTPResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VerifyOTPResponse.swift; sourceTree = "<group>"; };
 		043E59FA2C4D5A5900757A63 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		043E5A192C4ECE6B00757A63 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		0463F7242CCF8C58001CD235 /* LogoutResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoutResponse.swift; sourceTree = "<group>"; };
 		047A56BE2C6342F500E92BA0 /* AlertManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertManager.swift; sourceTree = "<group>"; };
 		047A56C82C636B3000E92BA0 /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
+		047CC66F2CCEB3CB008CCBAC /* CustomAnnotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAnnotation.swift; sourceTree = "<group>"; };
 		047D22222C4FFF4A00E7C4E5 /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
 		047D22242C500AEE00E7C4E5 /* MessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCell.swift; sourceTree = "<group>"; };
 		048FEDB42CCDEC3A00AE84EE /* Places.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Places.swift; sourceTree = "<group>"; };
@@ -210,7 +212,6 @@
 			children = (
 				043E59ED2C4D5A5900757A63 /* CreateUser.swift */,
 				043E59EE2C4D5A5900757A63 /* Crime.swift */,
-				043E59F32C4D5A5900757A63 /* OSMResponse.swift */,
 				043E59F42C4D5A5900757A63 /* OTPResponse.swift */,
 				043E59F62C4D5A5900757A63 /* UserProvider.swift */,
 				043E59F72C4D5A5900757A63 /* VerifyOTPResponse.swift */,
@@ -220,6 +221,7 @@
 				04D866C72C5239CD006A300B /* Location.swift */,
 				04D866C92C52C575006A300B /* LocationOfUser.swift */,
 				04C1D9782CCB4DAF002D8CED /* LatLon.swift */,
+				0463F7242CCF8C58001CD235 /* LogoutResponse.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -286,6 +288,7 @@
 				043E59F02C4D5A5900757A63 /* CrimesAndPoliceStations.swift */,
 				047A56C82C636B3000E92BA0 /* EmptyStateView.swift */,
 				04E0F6E92C898FD800972E2C /* ApiKeys.swift */,
+				047CC66F2CCEB3CB008CCBAC /* CustomAnnotation.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -391,6 +394,7 @@
 				04B369762C509E26004B9C9E /* ActiveUser.swift in Sources */,
 				047A56C92C636B3000E92BA0 /* EmptyStateView.swift in Sources */,
 				04CA8F3F2C6222FA0086CE44 /* UIViewControllerExt.swift in Sources */,
+				047CC6702CCEB3CB008CCBAC /* CustomAnnotation.swift in Sources */,
 				043E5A072C4D5A5900757A63 /* termsAndConditionViewController.swift in Sources */,
 				043E59FD2C4D5A5900757A63 /* AboutUsViewController.swift in Sources */,
 				043E5A042C4D5A5900757A63 /* SettingsViewController.swift in Sources */,
@@ -410,6 +414,7 @@
 				047D22232C4FFF4A00E7C4E5 /* Messages.swift in Sources */,
 				043E5A022C4D5A5900757A63 /* PrivacyViewController.swift in Sources */,
 				043E59CD2C4D59EC00757A63 /* AppDelegate.swift in Sources */,
+				0463F7252CCF8C58001CD235 /* LogoutResponse.swift in Sources */,
 				047D22252C500AEE00E7C4E5 /* MessageCell.swift in Sources */,
 				04D866C62C523831006A300B /* LocationViewController.swift in Sources */,
 				043E5A0B2C4D5A5900757A63 /* CrimeAnnotation.swift in Sources */,
@@ -424,7 +429,6 @@
 				043E5A122C4D5A5900757A63 /* UserProvider.swift in Sources */,
 				043E5A062C4D5A5900757A63 /* SignUpViewController.swift in Sources */,
 				043E5A132C4D5A5900757A63 /* VerifyOTPResponse.swift in Sources */,
-				043E5A0F2C4D5A5900757A63 /* OSMResponse.swift in Sources */,
 				043E5A092C4D5A5900757A63 /* CreateUser.swift in Sources */,
 				04D866CA2C52C575006A300B /* LocationOfUser.swift in Sources */,
 				04D866C82C5239CD006A300B /* Location.swift in Sources */,
@@ -590,6 +594,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -620,6 +625,7 @@
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

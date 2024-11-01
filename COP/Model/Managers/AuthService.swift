@@ -45,7 +45,7 @@ class AuthService{
   
     //MARK: - Verify OTP
     
-    func verifyOtp(phoneNumber: String, otp: String, isSignUp: Bool, completion: @escaping (Result<Void, Error>) -> Void) {
+    func verifyOtp(phoneNumber: String, otp: String, isSignUp: Bool,context : UIViewController,showLogoutAlert : (() -> Void)? = nil , completion: @escaping (Result<Void, Error>) -> Void) {
                let endpoint = isSignUp ? "/api/verify-otp" : "/api/verify-otp-signIn"
                guard let url = URL(string: "\(ApiKeys.baseURL)\(endpoint)") else {
                completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
@@ -76,6 +76,15 @@ class AuthService{
                          
                          do {
                              if let jsonResponse = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                                 
+                                 if let success = jsonResponse["success"] as? Bool, !success,
+                                                   let msg = jsonResponse["msg"] as? String, msg == "User already logged in" {
+                                                    DispatchQueue.main.async {
+                                                        showLogoutAlert?()
+                                            }
+                                                    return
+                                    }
+                                 
                                  if let userRole = jsonResponse["userRole"] as? String {
                                      UserDefaults.standard.set(userRole, forKey: Ud.userRole)
                                  }
@@ -116,7 +125,7 @@ class AuthService{
               }
           }
           task.resume()
-     }
+     }    
     
     func existingUser(phoneNumber: String, otp: String, completion: @escaping (OTPResponse?, Error?) -> Void) {
         let url = URL(string: "\(ApiKeys.baseURL)/api/verify-otp-signIn")!
@@ -155,6 +164,7 @@ class AuthService{
         let alertController = UIAlertController(title: "Logout", message: "Are you sure you want to logout?", preferredStyle: .alert)
         
         let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+            print(phoneNumber)
             guard let url = URL(string: "\(ApiKeys.baseURL)/api/logout") else {
                 return
             }
@@ -184,8 +194,12 @@ class AuthService{
                 }
                 
                 if let response = response as? HTTPURLResponse {
+                    print("Response Status Code: \(response.statusCode)")
+                    print("Response Headers: \(response.allHeaderFields)")
+                    if let data = data, let responseBody = String(data: data, encoding: .utf8) {
+                        print("Response Body: \(responseBody)")
+                    }
                     if response.statusCode == 200 {
-                        // Remove sign-in number from data
                         UserDefaults.standard.removeObject(forKey: Ud.token)
                         UserDefaults.standard.removeObject(forKey: Ud.userPn)
                         UserDefaults.standard.removeObject(forKey: Ud.userRole)
@@ -197,14 +211,14 @@ class AuthService{
                         UserDefaults.standard.set(false, forKey: Ud.isLoggedIn)
                         UserDefaults.standard.synchronize()
                         
-                        DispatchQueue.main.async{
-                                                 let storyboard = UIStoryboard(name: "Main", bundle: nil)
-                            let signInVC = storyboard.instantiateViewController(withIdentifier: K.signinView)
-                                                   signInVC.modalPresentationStyle = .fullScreen // or .overFullScreen, if you want a different effect
-                                                   context.present(signInVC, animated: true, completion: nil)
-                                                   self.showSnackBar(context: context, message: "User logged out successfully")
-                        }
-                    } else {
+                        DispatchQueue.main.async {
+                             let storyboard = UIStoryboard(name: "Main", bundle: nil)
+                             let signInVC = storyboard.instantiateViewController(withIdentifier: K.signinView)
+                             let navController = UINavigationController(rootViewController: signInVC)
+                             navController.modalPresentationStyle = .fullScreen
+                             context.present(navController, animated: true, completion: nil)
+                            self.showSnackBar(context: context, message: "User logged out successfully")
+                         }                    }else {
                         DispatchQueue.main.async {
                             self.showSnackBar(context: context, message: "Failed to log out: Server responded with status code \(response.statusCode)")
                         }
@@ -222,8 +236,7 @@ class AuthService{
         alertController.addAction(cancelAction)
         context.present(alertController, animated: true, completion: nil)
     }
-    
-    
+
     //MARK: - ShowSnackBar
     
       func showSnackBar(context: UIViewController, message: String) {
