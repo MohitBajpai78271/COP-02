@@ -38,10 +38,8 @@ class SignInViwController: UIViewController{
     
     @IBAction func signUpButtonTapped(_ sender: UIButton) {
         if let navController = self.navigationController {
-                let signupVC = storyboard?.instantiateViewController(withIdentifier: "SignUpViewController") as! SignUpViewController
+            let signupVC = storyboard?.instantiateViewController(withIdentifier: K.signupView) as! SignUpViewController
                 navController.pushViewController(signupVC, animated: true)
-            } else {
-                print("Navigation Controller is nil")
             }
     }
     
@@ -59,11 +57,10 @@ class SignInViwController: UIViewController{
         
         let fullphoneNumber : String = "+91\(MoblineNoTextField.text!)"
         
-        UserDefaults.standard.set(phoneNumber,forKey: "userPhoneNumber")
+        UserDefaults.standard.set(phoneNumber,forKey: Ud.userPn)
         UserDefaults.standard.synchronize()
         
         UserData.shared.isSignup = false
-        
         AuthService.shared.getOTP(phoneNumber: fullphoneNumber) { response, error in
             DispatchQueue.main.async {
                 if let error = error {
@@ -102,7 +99,8 @@ extension SignInViwController: UITextFieldDelegate{
         let currentText = textField.text ?? ""
         let updatedText = (currentText as NSString).replacingCharacters(in: range, with: string)
         
-        if updatedText.count == 10 && updatedText.rangeOfCharacter(from: CharacterSet.decimalDigits.inverted) == nil {
+        let textWithoutSpaces = updatedText.replacingOccurrences(of: " ", with: "")
+        if textWithoutSpaces.count == 10 && textWithoutSpaces.rangeOfCharacter(from: CharacterSet.decimalDigits.inverted) == nil {
             GenerateOTPView.tintColor = UIColor.blue
             numberIsCorrect = true
         } else {

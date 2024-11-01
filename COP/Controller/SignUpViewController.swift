@@ -17,8 +17,8 @@ class SignUpViewController: UIViewController{
     
     @IBOutlet weak var MobileNoTextFieldSignUp: UITextField!
     @IBOutlet weak var GeneratedOTPOutlet: UIButton!
-    @IBOutlet weak var warningLabel: UIView!
     @IBOutlet weak var conditionLabel: UILabel!
+    
     
     let alertHelper = AlertManager.shared
     
@@ -38,9 +38,6 @@ class SignUpViewController: UIViewController{
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: true)
-//        navigationController?.modalPresentationStyle = .fullScreen
-//        navigationItem.hidesBackButton = false
-//        navigationController?.isNavigationBarHidden = false
     }
 
     func setupTextField(){
@@ -54,7 +51,6 @@ class SignUpViewController: UIViewController{
                    return
                }
                
-               // Instantiate the SignUpViewController
                let signupVC = storyboard?.instantiateViewController(withIdentifier: "SignInViwController") as! SignInViwController
                navController.pushViewController(signupVC, animated: true)
     }
@@ -77,7 +73,6 @@ class SignUpViewController: UIViewController{
          checkBoxSwitch.transform = CGAffineTransform(scaleX: 0.75, y: 0.75)
      }
 
-     // Function to set constraints for the checkbox
      private func setConstraintsForCheckBox(checkBox: UISwitch) {
          checkBox.translatesAutoresizingMaskIntoConstraints = false
 
@@ -90,7 +85,7 @@ class SignUpViewController: UIViewController{
     
     
     @objc func switchValueChanged(_ sender: UISwitch){
-        UserDefaults.standard.set(sender.isOn, forKey: "TermsAgreed")
+        UserDefaults.standard.set(sender.isOn, forKey: K.termsAgreed)
     }
     
     @objc func dismissMyKeyboaed(){
@@ -99,9 +94,7 @@ class SignUpViewController: UIViewController{
     
     @IBAction func GenerateOTPPressed(_ sender: UIButton) {
         
-        let termsAgreed = UserDefaults.standard.bool(forKey: "TermsAgreed")
-        
-    
+        let termsAgreed = UserDefaults.standard.bool(forKey: K.termsAgreed)
         guard let phoneNumber = MobileNoTextFieldSignUp.text, !phoneNumber.isEmpty else {
             
             return
@@ -120,14 +113,11 @@ class SignUpViewController: UIViewController{
           }
         
         if numberIsGood == false{
-            warningLabel.isHidden = false
-            Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false) { _ in
-                self.warningLabel.isHidden = true
-            }
+            self.alertHelper.showAlert(on: self, message: "Enter correct number")
         }else{
            
-            UserDefaults.standard.removeObject(forKey: "userPhoneNumber")
-            UserDefaults.standard.set(phoneNumber,forKey: "phoneNumberSignUp")
+            UserDefaults.standard.removeObject(forKey: Ud.userPn)
+            UserDefaults.standard.set(phoneNumber,forKey: Ud.signupPn)
             UserDefaults.standard.synchronize()
             
             UserData.shared.isSignup = true
@@ -164,12 +154,10 @@ extension SignUpViewController: UITextFieldDelegate{
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        // Get the updated text
         let currentText = textField.text ?? ""
         let updatedText = (currentText as NSString).replacingCharacters(in: range, with: string)
-        
-        // Check if the updated text contains exactly 10 digits
-        if updatedText.count == 10 && CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: updatedText)) {
+        let textWithoutSpaces = updatedText.replacingOccurrences(of: " ", with: "")
+        if textWithoutSpaces.count == 10 && CharacterSet.decimalDigits.isSuperset(of: CharacterSet(charactersIn: textWithoutSpaces)) {
             numberIsGood = true
             GeneratedOTPOutlet.tintColor = UIColor.blue
         } else {

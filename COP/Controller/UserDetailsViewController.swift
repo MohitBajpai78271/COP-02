@@ -267,36 +267,25 @@ class UserDetailsViewController: UIViewController, UITextFieldDelegate, UIPicker
         authService.createUser(
             context: self,
             userName: userName,
-            phoneNumber: UserDefaults.standard.string(forKey: "phoneNumberSignUp") ?? "",
+            phoneNumber: UserDefaults.standard.string(forKey: Ud.signupPn) ?? "",
             dateOfBirth: dob,
             gender: gender,
             address: address
         ) {
-            print("User creation completed")
-            print("User Name: \(userName)")
-            print("Phone Number signup: \(String(describing: UserDefaults.standard.string(forKey: "phoneNumberSignUp")))")
-            print("Date of Birth: \(dob)")
-            print("Gender: \(gender)")
-            print("Address: \(address)")
-            print("Token: \(UserDefaults.standard.string(forKey: "x-auth-token") ?? " no found token createuser")")
-            print("User Role: \(UserDefaults.standard.string(forKey: "userRole") ?? "no found userRole createuser")")
-            
             DispatchQueue.main.async{
                 
-                UserDefaults.standard.set(userName, forKey: "userName")
-                UserDefaults.standard.set(dob, forKey: "dateOfBirth")
-                UserDefaults.standard.set(gender, forKey: "gender")
-                UserDefaults.standard.set(address, forKey: "address")
-                UserDefaults.standard.set(true, forKey: "isLoggedIn")
+                UserDefaults.standard.set(userName, forKey: Ud.userName)
+                UserDefaults.standard.set(dob, forKey: Ud.dob)
+                UserDefaults.standard.set(gender, forKey: Ud.gender)
+                UserDefaults.standard.set(address, forKey: Ud.address)
+                UserDefaults.standard.set(true, forKey: Ud.isLoggedIn)
                 UserDefaults.standard.synchronize()
                 
                 
                 self.dismiss(animated: true) {
-                    if let tabBarVC = self.storyboard?.instantiateViewController(withIdentifier: "TabBarViewController") {
+                    if let tabBarVC = self.storyboard?.instantiateViewController(withIdentifier: K.tabbarView) {
                         tabBarVC.modalPresentationStyle = .fullScreen
                         self.present(tabBarVC, animated: true, completion: nil)
-                    } else {
-                        print("TabBarViewController could not be instantiated")
                     }
                 }
             }
@@ -369,7 +358,7 @@ class UserDetailsViewController: UIViewController, UITextFieldDelegate, UIPicker
         textField.resignFirstResponder()
         return true
     }
-    // UIPickerViewDelegate and UIPickerViewDataSource methods
+    
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }

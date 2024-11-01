@@ -41,11 +41,23 @@
 		047A56C92C636B3000E92BA0 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047A56C82C636B3000E92BA0 /* EmptyStateView.swift */; };
 		047D22232C4FFF4A00E7C4E5 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047D22222C4FFF4A00E7C4E5 /* Messages.swift */; };
 		047D22252C500AEE00E7C4E5 /* MessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 047D22242C500AEE00E7C4E5 /* MessageCell.swift */; };
+		048FEDB52CCDEC3A00AE84EE /* Places.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048FEDB42CCDEC3A00AE84EE /* Places.swift */; };
 		04B369762C509E26004B9C9E /* ActiveUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B369752C509E26004B9C9E /* ActiveUser.swift */; };
 		04B601812C56A1520020C2BE /* UserDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B601802C56A1520020C2BE /* UserDetailsViewController.swift */; };
 		04B601832C56A8F90020C2BE /* FloatingLabelTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B601822C56A8F90020C2BE /* FloatingLabelTextField.swift */; };
+		04C1D9652CCB48EE002D8CED /* ALIPUR.csv in Resources */ = {isa = PBXBuildFile; fileRef = 04C1D9642CCB48EE002D8CED /* ALIPUR.csv */; };
+		04C1D9682CCB4929002D8CED /* BAWANA.csv in Resources */ = {isa = PBXBuildFile; fileRef = 04C1D9672CCB4929002D8CED /* BAWANA.csv */; };
+		04C1D96A2CCB4931002D8CED /* BHALSWA DAIRY.csv in Resources */ = {isa = PBXBuildFile; fileRef = 04C1D9692CCB4931002D8CED /* BHALSWA DAIRY.csv */; };
+		04C1D96C2CCB4939002D8CED /* NARELA.csv in Resources */ = {isa = PBXBuildFile; fileRef = 04C1D96B2CCB4939002D8CED /* NARELA.csv */; };
+		04C1D96E2CCB4946002D8CED /* NARELA Industrial Area.csv in Resources */ = {isa = PBXBuildFile; fileRef = 04C1D96D2CCB4946002D8CED /* NARELA Industrial Area.csv */; };
+		04C1D9702CCB494E002D8CED /* SAMAYPUR BADLI.csv in Resources */ = {isa = PBXBuildFile; fileRef = 04C1D96F2CCB494E002D8CED /* SAMAYPUR BADLI.csv */; };
+		04C1D9722CCB495A002D8CED /* SWAROOP NAGAR.csv in Resources */ = {isa = PBXBuildFile; fileRef = 04C1D9712CCB495A002D8CED /* SWAROOP NAGAR.csv */; };
+		04C1D9742CCB496C002D8CED /* SHAHBAD DAIRY.csv in Resources */ = {isa = PBXBuildFile; fileRef = 04C1D9732CCB496C002D8CED /* SHAHBAD DAIRY.csv */; };
+		04C1D9772CCB49DD002D8CED /* SwiftCSV in Frameworks */ = {isa = PBXBuildFile; productRef = 04C1D9762CCB49DD002D8CED /* SwiftCSV */; };
+		04C1D9792CCB4DAF002D8CED /* LatLon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04C1D9782CCB4DAF002D8CED /* LatLon.swift */; };
 		04CA8F3F2C6222FA0086CE44 /* UIViewControllerExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CA8F3E2C6222FA0086CE44 /* UIViewControllerExt.swift */; };
 		04CA8F472C624AD20086CE44 /* K.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04CA8F462C624AD20086CE44 /* K.swift */; };
+		04D1111E2CCAB24100ED7D54 /* Ud.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04D1111D2CCAB24100ED7D54 /* Ud.swift */; };
 		04D866C62C523831006A300B /* LocationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04D866C52C523831006A300B /* LocationViewController.swift */; };
 		04D866C82C5239CD006A300B /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04D866C72C5239CD006A300B /* Location.swift */; };
 		04D866CA2C52C575006A300B /* LocationOfUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04D866C92C52C575006A300B /* LocationOfUser.swift */; };
@@ -88,11 +100,22 @@
 		047A56C82C636B3000E92BA0 /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
 		047D22222C4FFF4A00E7C4E5 /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
 		047D22242C500AEE00E7C4E5 /* MessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCell.swift; sourceTree = "<group>"; };
+		048FEDB42CCDEC3A00AE84EE /* Places.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Places.swift; sourceTree = "<group>"; };
 		04B369752C509E26004B9C9E /* ActiveUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveUser.swift; sourceTree = "<group>"; };
 		04B601802C56A1520020C2BE /* UserDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDetailsViewController.swift; sourceTree = "<group>"; };
 		04B601822C56A8F90020C2BE /* FloatingLabelTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingLabelTextField.swift; sourceTree = "<group>"; };
+		04C1D9642CCB48EE002D8CED /* ALIPUR.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = ALIPUR.csv; sourceTree = "<group>"; };
+		04C1D9672CCB4929002D8CED /* BAWANA.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = BAWANA.csv; sourceTree = "<group>"; };
+		04C1D9692CCB4931002D8CED /* BHALSWA DAIRY.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = "BHALSWA DAIRY.csv"; sourceTree = "<group>"; };
+		04C1D96B2CCB4939002D8CED /* NARELA.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = NARELA.csv; sourceTree = "<group>"; };
+		04C1D96D2CCB4946002D8CED /* NARELA Industrial Area.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = "NARELA Industrial Area.csv"; sourceTree = "<group>"; };
+		04C1D96F2CCB494E002D8CED /* SAMAYPUR BADLI.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = "SAMAYPUR BADLI.csv"; sourceTree = "<group>"; };
+		04C1D9712CCB495A002D8CED /* SWAROOP NAGAR.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = "SWAROOP NAGAR.csv"; sourceTree = "<group>"; };
+		04C1D9732CCB496C002D8CED /* SHAHBAD DAIRY.csv */ = {isa = PBXFileReference; lastKnownFileType = text; path = "SHAHBAD DAIRY.csv"; sourceTree = "<group>"; };
+		04C1D9782CCB4DAF002D8CED /* LatLon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LatLon.swift; sourceTree = "<group>"; };
 		04CA8F3E2C6222FA0086CE44 /* UIViewControllerExt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewControllerExt.swift; sourceTree = "<group>"; };
 		04CA8F462C624AD20086CE44 /* K.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = K.swift; sourceTree = "<group>"; };
+		04D1111D2CCAB24100ED7D54 /* Ud.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ud.swift; sourceTree = "<group>"; };
 		04D866C52C523831006A300B /* LocationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationViewController.swift; sourceTree = "<group>"; };
 		04D866C72C5239CD006A300B /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
 		04D866C92C52C575006A300B /* LocationOfUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationOfUser.swift; sourceTree = "<group>"; };
@@ -105,6 +128,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				047A56C42C6351E000E92BA0 /* Alamofire in Frameworks */,
+				04C1D9772CCB49DD002D8CED /* SwiftCSV in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -136,6 +160,7 @@
 				043E59FC2C4D5A5900757A63 /* View */,
 				043E59EB2C4D5A5900757A63 /* Controller */,
 				043E59D52C4D59ED00757A63 /* Assets.xcassets */,
+				04C1D9662CCB4911002D8CED /* CSVFiles */,
 				043E59D72C4D59ED00757A63 /* LaunchScreen.storyboard */,
 				043E59DA2C4D59ED00757A63 /* Info.plist */,
 			);
@@ -194,8 +219,24 @@
 				04B369752C509E26004B9C9E /* ActiveUser.swift */,
 				04D866C72C5239CD006A300B /* Location.swift */,
 				04D866C92C52C575006A300B /* LocationOfUser.swift */,
+				04C1D9782CCB4DAF002D8CED /* LatLon.swift */,
 			);
 			path = Data;
+			sourceTree = "<group>";
+		};
+		04C1D9662CCB4911002D8CED /* CSVFiles */ = {
+			isa = PBXGroup;
+			children = (
+				04C1D9642CCB48EE002D8CED /* ALIPUR.csv */,
+				04C1D9672CCB4929002D8CED /* BAWANA.csv */,
+				04C1D9692CCB4931002D8CED /* BHALSWA DAIRY.csv */,
+				04C1D96B2CCB4939002D8CED /* NARELA.csv */,
+				04C1D96D2CCB4946002D8CED /* NARELA Industrial Area.csv */,
+				04C1D96F2CCB494E002D8CED /* SAMAYPUR BADLI.csv */,
+				04C1D9732CCB496C002D8CED /* SHAHBAD DAIRY.csv */,
+				04C1D9712CCB495A002D8CED /* SWAROOP NAGAR.csv */,
+			);
+			path = CSVFiles;
 			sourceTree = "<group>";
 		};
 		04CA8F402C6248060086CE44 /* CustomCell */ = {
@@ -253,6 +294,8 @@
 			isa = PBXGroup;
 			children = (
 				04CA8F462C624AD20086CE44 /* K.swift */,
+				04D1111D2CCAB24100ED7D54 /* Ud.swift */,
+				048FEDB42CCDEC3A00AE84EE /* Places.swift */,
 			);
 			path = Constants;
 			sourceTree = "<group>";
@@ -275,6 +318,7 @@
 			name = COP;
 			packageProductDependencies = (
 				047A56C32C6351E000E92BA0 /* Alamofire */,
+				04C1D9762CCB49DD002D8CED /* SwiftCSV */,
 			);
 			productName = COP;
 			productReference = 043E59C92C4D59EC00757A63 /* COP.app */;
@@ -306,6 +350,7 @@
 			mainGroup = 043E59C02C4D59EC00757A63;
 			packageReferences = (
 				047A56C22C6351E000E92BA0 /* XCRemoteSwiftPackageReference "Alamofire" */,
+				04C1D9752CCB49DD002D8CED /* XCRemoteSwiftPackageReference "SwiftCSV" */,
 			);
 			productRefGroup = 043E59CA2C4D59EC00757A63 /* Products */;
 			projectDirPath = "";
@@ -321,9 +366,17 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				04C1D9652CCB48EE002D8CED /* ALIPUR.csv in Resources */,
+				04C1D9702CCB494E002D8CED /* SAMAYPUR BADLI.csv in Resources */,
+				04C1D96C2CCB4939002D8CED /* NARELA.csv in Resources */,
+				04C1D96A2CCB4931002D8CED /* BHALSWA DAIRY.csv in Resources */,
+				04C1D9682CCB4929002D8CED /* BAWANA.csv in Resources */,
+				04C1D96E2CCB4946002D8CED /* NARELA Industrial Area.csv in Resources */,
+				04C1D9742CCB496C002D8CED /* SHAHBAD DAIRY.csv in Resources */,
 				043E59D62C4D59ED00757A63 /* Assets.xcassets in Resources */,
 				043E5A152C4D5A5900757A63 /* Main.storyboard in Resources */,
 				043E59D92C4D59ED00757A63 /* Base in Resources */,
+				04C1D9722CCB495A002D8CED /* SWAROOP NAGAR.csv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -351,6 +404,7 @@
 				047A56BF2C6342F500E92BA0 /* AlertManager.swift in Sources */,
 				04B601812C56A1520020C2BE /* UserDetailsViewController.swift in Sources */,
 				043E59FE2C4D5A5900757A63 /* Admin View Controller.swift in Sources */,
+				048FEDB52CCDEC3A00AE84EE /* Places.swift in Sources */,
 				043E5A012C4D5A5900757A63 /* OTPViewController.swift in Sources */,
 				043E5A102C4D5A5900757A63 /* OTPResponse.swift in Sources */,
 				047D22232C4FFF4A00E7C4E5 /* Messages.swift in Sources */,
@@ -362,7 +416,9 @@
 				043E59FF2C4D5A5900757A63 /* ApiMapsViewController.swift in Sources */,
 				043E5A052C4D5A5900757A63 /* SignInViwController.swift in Sources */,
 				043E5A082C4D5A5900757A63 /* AuthService.swift in Sources */,
+				04D1111E2CCAB24100ED7D54 /* Ud.swift in Sources */,
 				043E5A0C2C4D5A5900757A63 /* CrimesAndPoliceStations.swift in Sources */,
+				04C1D9792CCB4DAF002D8CED /* LatLon.swift in Sources */,
 				043E5A0D2C4D5A5900757A63 /* dropDownButton.swift in Sources */,
 				043E5A112C4D5A5900757A63 /* UserData.swift in Sources */,
 				043E5A122C4D5A5900757A63 /* UserProvider.swift in Sources */,
@@ -609,6 +665,14 @@
 				minimumVersion = 5.9.1;
 			};
 		};
+		04C1D9752CCB49DD002D8CED /* XCRemoteSwiftPackageReference "SwiftCSV" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/swiftcsv/SwiftCSV";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.10.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -616,6 +680,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 047A56C22C6351E000E92BA0 /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
+		};
+		04C1D9762CCB49DD002D8CED /* SwiftCSV */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 04C1D9752CCB49DD002D8CED /* XCRemoteSwiftPackageReference "SwiftCSV" */;
+			productName = SwiftCSV;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

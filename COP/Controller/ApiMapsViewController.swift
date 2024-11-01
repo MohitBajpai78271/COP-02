@@ -9,6 +9,7 @@ import UIKit
 import MapKit
 import CoreLocation
 import Alamofire
+import SwiftCSV
 
 class ApiMapsViewController: UIViewController{
     
@@ -26,16 +27,27 @@ class ApiMapsViewController: UIViewController{
     
     var datePicker: UIDatePicker!
     private var transparentView : UIView?
+
     
     var locationManager = CLLocationManager()
     var currentLocation : CLLocation?
+    var polygonColors = [MKPolygon: UIColor]()
+    var locationPolygons = [String: MKPolygon]()
     
     var hasCentredOnUser = false
+    var coordinatesAlipur: [LatLon] = []
+    var coordinatesBawana : [LatLon] = []
+    var coordinatesBhalswa : [LatLon] = []
+    var coordinatesNarela: [LatLon] = []
+    var coordinatesNIA: [LatLon] = []
+    var coordinatesSamaypur: [LatLon] = []
+    var coordinatesSwaroop: [LatLon] = []
+    var coordinatesShahbad: [LatLon] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupCrimeLabel()
-        
+        setMapRegionToDelhi()
         criimeTypeButton.delegate = self
         policeStationButton.delegate = self
         
@@ -47,9 +59,103 @@ class ApiMapsViewController: UIViewController{
         setupMapView()
         setupLocationManager()
         showOptions()
-      
+        
         fetchCrimeData(selectedDate: nil)
+        displayAllRegions()
     }
+    
+    
+    
+    func displayAllRegions() {
+        coordinatesAlipur = loadCSV(from: Places.crimesLocation[0])
+        coordinatesNIA = loadCSV(from: Places.crimesLocation[4])
+        coordinatesNarela = loadCSV(from: Places.crimesLocation[3])
+        coordinatesShahbad = loadCSV(from: Places.crimesLocation[6])
+        coordinatesSamaypur = loadCSV(from: Places.crimesLocation[5])
+        coordinatesBhalswa = loadCSV(from: Places.crimesLocation[2])
+        coordinatesBawana = loadCSV(from: Places.crimesLocation[1])
+        coordinatesSwaroop = loadCSV(from: Places.crimesLocation[7])
+        
+        setMapViewBoundaries(for: coordinatesAlipur, color: UIColor.white)
+        setMapViewBoundaries(for: coordinatesNIA, color: UIColor(red: 65/255, green: 105/255, blue: 225/255, alpha: 1.0))
+        setMapViewBoundaries(for: coordinatesNarela, color: UIColor(red: 34/255, green: 139/255, blue: 34/255, alpha: 1.0))
+        setMapViewBoundaries(for: coordinatesShahbad, color: UIColor(red: 255/255, green: 140/255, blue: 0/255, alpha: 1.0))
+        setMapViewBoundaries(for: coordinatesSamaypur, color: UIColor(red: 128/255, green: 0/255, blue: 128/255, alpha: 1.0))
+        setMapViewBoundaries(for: coordinatesBhalswa, color: UIColor(red: 0/255, green: 128/255, blue: 128/255, alpha: 1.0))
+        setMapViewBoundaries(for: coordinatesBawana, color: UIColor(red: 218/255, green: 165/255, blue: 32/255, alpha: 1.0))
+        setMapViewBoundaries(for: coordinatesSwaroop, color: UIColor(red: 255/255, green: 20/255, blue: 147/255, alpha: 1.0))
+
+    }
+
+    func setMapRegionToDelhi() {
+        let delhiCenter = CLLocationCoordinate2D(latitude: 28.6139, longitude: 77.2090)
+        let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+        let region = MKCoordinateRegion(center: delhiCenter, span: span)
+        
+        mapView.setRegion(region, animated: true)
+        mapView.mapType = .standard
+    }
+    
+    func loadCSV(from csvName: String) -> [LatLon] {
+        var csvToStruct = [LatLon]()
+        
+        guard let filePath = Bundle.main.path(forResource: csvName, ofType: "csv") else {
+            return []
+        }
+        
+        do {
+            let data = try String(contentsOfFile: filePath)
+            let rows = data.components(separatedBy: "\n")
+
+            for row in rows {
+                let csvColumns = row.components(separatedBy: ",").map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+                if csvColumns.count == 2,
+                   let lat = Double(csvColumns[0]),
+                   let lon = Double(csvColumns[1]) {
+                   let latLonStruct = LatLon(latitude: lat, longitude: lon)
+                    csvToStruct.append(latLonStruct)
+                }
+            }
+        } catch {
+            print("Error reading CSV file: \(error)")
+        }
+        
+        return csvToStruct
+    }
+
+    func setMapViewBoundaries(for coordinates: [LatLon], color: UIColor) {
+        guard !coordinates.isEmpty else {
+            return
+        }
+        var coords = [CLLocationCoordinate2D]()
+        var minLatitude = Double.greatestFiniteMagnitude
+        var maxLatitude = Double.leastNormalMagnitude
+        var minLongitude = Double.greatestFiniteMagnitude
+        var maxLongitude = Double.leastNormalMagnitude
+
+        for coord in coordinates {
+            let lat = coord.latitude
+            let lon = coord.longitude
+            coords.append(CLLocationCoordinate2D(latitude: lat, longitude: lon))
+            minLatitude = min(minLatitude, lat)
+            maxLatitude = max(maxLatitude, lat)
+            minLongitude = min(minLongitude, lon)
+            maxLongitude = max(maxLongitude, lon)
+        }
+        let polygon = ColoredPolygon(coordinates: &coords, count: coords.count)
+        polygon.color = color
+        mapView.addOverlay(polygon)
+
+        let centerLatitude = (minLatitude + maxLatitude) / 2
+        let centerLongitude = (minLongitude + maxLongitude) / 2
+        let spanLatitude = (maxLatitude - minLatitude) * 1.1
+        let spanLongitude = (maxLongitude - minLongitude) * 1.1
+
+        let region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: centerLatitude, longitude: centerLongitude), span: MKCoordinateSpan(latitudeDelta: spanLatitude, longitudeDelta: spanLongitude))
+        mapView.setRegion(region, animated: true)
+    }
+
+
     
     func showOptions(){
         criimeTypeButton.options = CrimesAndPoliceStations.crimeType
@@ -65,12 +171,12 @@ class ApiMapsViewController: UIViewController{
         crimesLabel.textColor = UIColor.label
         crimesLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(crimesLabel)
-    
-    NSLayoutConstraint.activate([
-          crimesLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
-          crimesLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
-      ])
-      
+        
+        NSLayoutConstraint.activate([
+            crimesLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            crimesLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16)
+        ])
+        
     }
     
     func setupLocationManager(){
@@ -114,31 +220,31 @@ class ApiMapsViewController: UIViewController{
     
     @IBAction func calenderButtonPressed(_ sender: UIButton) {
         
-             let alertController = UIAlertController(title: "Select Date", message: nil, preferredStyle: .alert)
-                alertController.view.addSubview(datePicker)
-                
-                alertController.addAction(UIAlertAction(title: "Reset", style: .cancel) { [weak self] _ in
-                    guard let self = self else { return }
-                    self.dateText.text = "No date selected"
-                    self.datePicker.date = Date()
-                    self.fetchCrimeData(selectedDate: nil)
-                })
-                
-                alertController.addAction(UIAlertAction(title: "Done", style: .default) { [weak self] _ in
-                    guard let self = self else { return }
-                    let selectedDate = self.datePicker.date
-                    let dateFormatter = DateFormatter()
-                    dateFormatter.dateFormat = "yyyy-MM-dd"
-                    let formattedDate = dateFormatter.string(from: selectedDate)
-                    self.dateText.text = formattedDate
-                    self.fetchCrimeData(selectedDate: formattedDate)
-                })
-                
-                present(alertController, animated: true) { [weak self] in
-                    guard let self = self else { return }
-                    self.tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissAlertController))
-                    alertController.view.superview?.addGestureRecognizer(self.tapGesture!)
-                }
+        let alertController = UIAlertController(title: "Select Date", message: nil, preferredStyle: .alert)
+        alertController.view.addSubview(datePicker)
+        
+        alertController.addAction(UIAlertAction(title: "Reset", style: .cancel) { [weak self] _ in
+            guard let self = self else { return }
+            self.dateText.text = "No date selected"
+            self.datePicker.date = Date()
+            self.fetchCrimeData(selectedDate: nil)
+        })
+        
+        alertController.addAction(UIAlertAction(title: "Done", style: .default) { [weak self] _ in
+            guard let self = self else { return }
+            let selectedDate = self.datePicker.date
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            let formattedDate = dateFormatter.string(from: selectedDate)
+            self.dateText.text = formattedDate
+            self.fetchCrimeData(selectedDate: formattedDate)
+        })
+        
+        present(alertController, animated: true) { [weak self] in
+            guard let self = self else { return }
+            self.tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissAlertController))
+            alertController.view.superview?.addGestureRecognizer(self.tapGesture!)
+        }
     }
     
     @objc func dismissAlertController(){
@@ -148,12 +254,33 @@ class ApiMapsViewController: UIViewController{
         }
     }
     
+    func isCrimeWithinRegion(crime: Crime, regionCoordinates: [LatLon]) -> Bool {
+        // Convert latitude and longitude from String to Double
+        guard let crimeLatitude = Double(crime.latitude),
+              let crimeLongitude = Double(crime.longitude) else {
+            return false
+        }
+
+        let crimeLocation = CLLocation(latitude: crimeLatitude, longitude: crimeLongitude)
+
+        // Check against each coordinate in the region
+        for coordinate in regionCoordinates {
+            let regionLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+            // Check if the crime is within a certain distance from the region coordinates
+            if crimeLocation.distance(from: regionLocation) < 1000 { // 1000 meters
+                return true
+            }
+        }
+
+        return false
+    }
+    
     //MARK: - FetchCrimeData and Add Annotation
     
     func fetchCrimeData(selectedDate: String?) {
         let place = policeStationLabel.text ?? "All"
         let crimeType = crimTypeLabel.text ?? "All"
-
+        
         // Prepare parameters based on current filters
         var parameters: [String: String] = [:]
         if let date = selectedDate, date != "No date selected" {
@@ -168,35 +295,58 @@ class ApiMapsViewController: UIViewController{
         
         showLoadingView(mapview: mapView)
         
-
+        
         // Construct URL with parameters
         var components = URLComponents(string: "\(ApiKeys.baseURL)/view-data/crimedata")!
         components.queryItems = parameters.isEmpty ? nil : parameters.map { URLQueryItem(name: $0.key, value: $0.value) }
-
+        
         guard let apiUrl = components.url else {
             print("Invalid URL")
-                  dismissLoadingView()
-                  return
+            dismissLoadingView()
+            return
         }
-
+        
         AF.request(apiUrl, parameters: parameters).responseDecodable(of: [Crime].self) { response in
             
             self.dismissLoadingView()
-
+            
             switch response.result {
             case .success(let crimes):
                 self.crimes = crimes
-
+                // Get coordinates for the selected place
+                           let selectedCoordinates: [LatLon]
+                           switch place {
+                           case Places.crimesLocation[0]:
+                               selectedCoordinates = self.coordinatesAlipur
+                           case Places.crimesLocation[1]:
+                               selectedCoordinates = self.coordinatesBawana
+                           case Places.crimesLocation[2]:
+                               selectedCoordinates = self.coordinatesBhalswa
+                           case Places.crimesLocation[3]:
+                               selectedCoordinates = self.coordinatesNarela
+                           case Places.crimesLocation[4]:
+                               selectedCoordinates = self.coordinatesNIA
+                           case Places.crimesLocation[5]:
+                               selectedCoordinates = self.coordinatesSamaypur
+                           case Places.crimesLocation[6]:
+                               selectedCoordinates = self.coordinatesSwaroop
+                           case Places.crimesLocation[7]:
+                               selectedCoordinates = self.coordinatesShahbad
+                           default:
+                               selectedCoordinates = []
+                           }
+                
                 let filteredCrimes = crimes.filter { crime in
-                             let crimeTypeFromAPI = crime.crimeType.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-                             let filteredCrimeType = crimeType.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-
-                             let matchDate = selectedDate == nil || crime.date == selectedDate
-                             let matchPlace = place == "All" || crime.beat == place
-                             let matchCrimeType = filteredCrimeType == "all" || crimeTypeFromAPI == filteredCrimeType
-                             
-                             return matchDate && matchPlace && matchCrimeType
-                         }
+                    let crimeTypeFromAPI = crime.crimeType.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+                    let filteredCrimeType = crimeType.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+                    
+                    let matchDate = selectedDate == nil || crime.date == selectedDate
+                    let matchPlace = place == "All" || crime.beat == place
+                    let matchCrimeType = filteredCrimeType == "all" || crimeTypeFromAPI == filteredCrimeType
+                    let matchCoordinates = selectedCoordinates.isEmpty || self.isCrimeWithinRegion(crime: crime, regionCoordinates: selectedCoordinates)
+                    
+                    return matchDate && matchPlace && matchCrimeType && matchCoordinates
+                }
                 
                 DispatchQueue.main.async {
                     self.addCrimeAnnotations(crimes: filteredCrimes)
@@ -205,7 +355,6 @@ class ApiMapsViewController: UIViewController{
             case .failure(let error):
                 if let data = response.data {
                     _ = String(data: data, encoding: .utf8) ?? "Unknown error"
-                    print("Request failed with error: \(error.localizedDescription), server message: ")
                 } else {
                     print("Request failed with error: \(error.localizedDescription)")
                 }
@@ -219,20 +368,49 @@ class ApiMapsViewController: UIViewController{
     func addCrimeAnnotations(crimes : [Crime]) {
         mapView.removeAnnotations(mapView.annotations)
         
+        var nearestCrimeLocation: CLLocationCoordinate2D?
+        var minimumDistance: CLLocationDistance = CLLocationDistanceMax
+        let userLocation = mapView.userLocation.location
+        
+        let delhiLatitudeRange = 28.40...28.90
+        let delhiLongitudeRange = 76.80...77.30
+        
         for crime in crimes {
             guard let latitude = Double(crime.latitude), let longitude = Double(crime.longitude) else {
-                       print("Invalid coordinates for crime: \(crime)")
-                       continue
-                   }
-              let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-              let annotation = MKPointAnnotation()
-              annotation.coordinate = coordinate
-              annotation.title = crime.crimeType
-              annotation.subtitle = "\(crime.date) - \(crime.beat)"
-              mapView.addAnnotation(annotation)
-          }
+                continue
+            }
+            guard delhiLatitudeRange.contains(latitude), delhiLongitudeRange.contains(longitude) else {
+                        continue
+            }
+            
+            let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = coordinate
+            annotation.title = crime.crimeType
+            annotation.subtitle = "\(crime.date) - \(crime.beat)"
+            mapView.addAnnotation(annotation)
+            if let userLocation = userLocation {
+                let crimeLocation = CLLocation(latitude: latitude, longitude: longitude)
+                let distance = crimeLocation.distance(from: userLocation)
+                
+                if distance < minimumDistance {
+                    minimumDistance = distance
+                    nearestCrimeLocation = coordinate
+                }
+            }
+        }
+        
+        if let nearestCrimeLocation = nearestCrimeLocation {
+            let regionRadius: CLLocationDistance = 1000 // zoom
+            
+            let coordinateRegion = MKCoordinateRegion(center: nearestCrimeLocation, latitudinalMeters: regionRadius * 2, longitudinalMeters: regionRadius * 2)
+        
+            DispatchQueue.main.async {
+                self.mapView.setRegion(coordinateRegion, animated: true)
+            }
         }
     }
+}
 
 //MARK: - DropDown Button
 
@@ -304,11 +482,11 @@ extension ApiMapsViewController : CLLocationManagerDelegate{
 extension ApiMapsViewController: MKMapViewDelegate{
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         guard let annotation = annotation as? MKPointAnnotation else {
-                return nil
-            }
-        let identifier = "CrimeAnnotation"
+            return nil
+        }
+        let identifier = K.crimeIdentifier
         var annotationView = mapView.dequeueReusableAnnotationView(withIdentifier: identifier) as? MKMarkerAnnotationView
-
+        
         if annotationView == nil {
             annotationView = MKMarkerAnnotationView(annotation: annotation, reuseIdentifier: identifier)
             annotationView?.canShowCallout = true
@@ -317,26 +495,46 @@ extension ApiMapsViewController: MKMapViewDelegate{
         }
         
         if let crimeType = annotation.title {   // let title = annotation.title,
+            
+            switch crimeType {
                 
-                switch crimeType {
-                    
-                case "BURGLARY":
-                    annotationView?.markerTintColor = .red
-                case "MV THEFT":
-                    annotationView?.markerTintColor = .orange
-                case "SNATCHING":
-                    annotationView?.markerTintColor = .purple
-                case "HOUSE THEFT":
-                    annotationView?.markerTintColor = .green
-                case "ROBBERY":
-                    annotationView?.markerTintColor = .blue
-                default:
-                    annotationView?.markerTintColor = .yellow
-                }
+            case CrimesAndPoliceStations.crimeType[1]:
+                annotationView?.markerTintColor = .red
+            case CrimesAndPoliceStations.crimeType[2]:
+                annotationView?.markerTintColor = .orange
+            case CrimesAndPoliceStations.crimeType[3]:
+                annotationView?.markerTintColor = .purple
+            case CrimesAndPoliceStations.crimeType[4]:
+                annotationView?.markerTintColor = .green
+            case CrimesAndPoliceStations.crimeType[5]:
+                annotationView?.markerTintColor = .blue
+            default:
+                annotationView?.markerTintColor = .yellow
             }
-            
-            
-            return annotationView
+        }
+        
+        
+        return annotationView
+    }
+    
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        if let polygonOverlay = overlay as? ColoredPolygon,
+           let color = polygonOverlay.color {
+            let renderer = MKPolygonRenderer(polygon: polygonOverlay)
+            renderer.strokeColor = color
+            renderer.lineWidth = 2
+            renderer.fillColor = color.withAlphaComponent(0.2)
+            return renderer
+        } else {
+            let renderer = MKPolygonRenderer(polygon: overlay as! MKPolygon)
+            renderer.strokeColor = UIColor.black
+            renderer.lineWidth = 2
+            renderer.fillColor = UIColor.black.withAlphaComponent(0.2)
+            return renderer
         }
     }
+}
 
+class ColoredPolygon: MKPolygon {
+    var color: UIColor?
+}
