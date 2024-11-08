@@ -24,7 +24,7 @@ class AuthService{
     //MARK: - Get OTP
     
     func getOTP(phoneNumber: String,completion: @escaping(OTPResponse?, Error?)->Void){
-        let urlString = "\(ApiKeys.baseURL)/api/send-otp"
+        let urlString = "  "
         let parameters: [String: Any] = ["phoneNumber": phoneNumber]
         
         AF.request(urlString, method: .post, parameters: parameters, encoding: JSONEncoding.default)
@@ -46,8 +46,8 @@ class AuthService{
     //MARK: - Verify OTP
     
     func verifyOtp(phoneNumber: String, otp: String, isSignUp: Bool, completion: @escaping (Result<Void, Error>) -> Void) {
-               let endpoint = isSignUp ? "/api/verify-otp" : "/api/verify-otp-signIn"
-               guard let url = URL(string: "\(ApiKeys.baseURL)\(endpoint)") else {
+               let endpoint = isSignUp ? "" : ""
+               guard let url = URL(string: "  \(endpoint)") else {
                completion(.failure(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])))
                return
     }
@@ -119,7 +119,7 @@ class AuthService{
      }
     
     func existingUser(phoneNumber: String, otp: String, completion: @escaping (OTPResponse?, Error?) -> Void) {
-        let url = URL(string: "\(ApiKeys.baseURL)/api/verify-otp-signIn")!
+        let url = URL(string: "  ")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -155,7 +155,7 @@ class AuthService{
         let alertController = UIAlertController(title: "Logout", message: "Are you sure you want to logout?", preferredStyle: .alert)
         
         let okAction = UIAlertAction(title: "OK", style: .default) { _ in
-            guard let url = URL(string: "\(ApiKeys.baseURL)/api/logout") else {
+            guard let url = URL(string: "  ") else {
                 return
             }
             
@@ -185,7 +185,6 @@ class AuthService{
                 
                 if let response = response as? HTTPURLResponse {
                     if response.statusCode == 200 {
-                        // Remove sign-in number from data
                         UserDefaults.standard.removeObject(forKey: Ud.token)
                         UserDefaults.standard.removeObject(forKey: Ud.userPn)
                         UserDefaults.standard.removeObject(forKey: Ud.userRole)
@@ -243,7 +242,7 @@ class AuthService{
     
     func createUser(context: UIViewController, userName: String, phoneNumber: String, dateOfBirth: String, gender: String, address: String, completion: @escaping () -> Void) {
         
-        let url = URL(string: "\(ApiKeys.baseURL)/users/user-token")!
+        let url = URL(string: "")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json; charset=UTF-8", forHTTPHeaderField: "Content-Type")
@@ -330,7 +329,7 @@ class AuthService{
             return
         }
 
-        let url = URL(string: "\(ApiKeys.baseURL)/update-userdata")!
+        let url = URL(string: "  ")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json; charset=UTF-8", forHTTPHeaderField: "Content-Type")
