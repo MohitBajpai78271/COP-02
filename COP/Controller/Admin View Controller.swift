@@ -137,7 +137,7 @@ class AdminViewController: UIViewController{
         }
 
     func fetchActiveUserData(completion: @escaping (Result<[ActiveUser], Error>) -> Void) {
-        let url =  "\(ApiKeys.baseURL2)/api/activeUser"
+        let url =  "   "
     
         AF.request(url, method: .get).responseData{ response in
             if let data = response.data {
@@ -196,7 +196,7 @@ extension AdminViewController: UITableViewDataSource,UITableViewDelegate{
     }
     
     func fetchUserLocation(phoneNumber: String, completion: @escaping (Result<LocationOfUser, Error>) -> Void) {
-        let url = "\(ApiKeys.baseURL)/users-location"
+        let url = "  "
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 30
         let parameters: [String: Any] = ["phoneNumber": phoneNumber]
