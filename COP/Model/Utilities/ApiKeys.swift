@@ -8,6 +8,5 @@
 import UIKit
 
 struct ApiKeys{
-    static let baseURL = ""
-    static let baseURL2 = ""
+    
 }
