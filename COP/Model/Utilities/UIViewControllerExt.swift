@@ -16,8 +16,12 @@ extension UIViewController {
             objc_setAssociatedObject(self, &AssociatedKeys.loadingWorkItem, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
     }
+    private struct LoadingViewConstants {
+         static var containerView: UIView?
+        static var loadingTimeoutWorkItem: DispatchWorkItem?
+     }
     
-    func showLoadingView(mapview: MKMapView, timeout: TimeInterval = 15) { // 15 seconds timeout by default
+    func showLoadingView(mapview: MKMapView, timeout: TimeInterval = 10) { // 15 seconds timeout by default
         containerView = UIView(frame: mapview.bounds)
         view.addSubview(containerView)
         
@@ -57,35 +61,78 @@ extension UIViewController {
         }
     }
     
-    func showLoadingView2(tableView: UITableView) { // 15 seconds timeout by default
-        containerView = UIView(frame: tableView.bounds)
-        view.addSubview(containerView)
+    func showLoadingView2(tableView: UITableView) {
+          // Ensure no duplicate loading views
+          guard LoadingViewConstants.containerView == nil else { return }
+          
+          // Create and configure the container view
+          let containerView = UIView(frame: tableView.bounds)
+          containerView.backgroundColor = UIColor(white: 0, alpha: 0.5)
+          view.addSubview(containerView)
+          LoadingViewConstants.containerView = containerView
+
+          // Add and configure the activity indicator
+          let activityIndicator = UIActivityIndicatorView(style: .large)
+          activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+          containerView.addSubview(activityIndicator)
+          
+          NSLayoutConstraint.activate([
+              activityIndicator.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+              activityIndicator.centerYAnchor.constraint(equalTo: containerView.centerYAnchor)
+          ])
+          
+          activityIndicator.startAnimating()
+          
+          // Schedule a 3-second timeout to dismiss the loading view automatically
+          let timeoutWorkItem = DispatchWorkItem { [weak self] in
+              self?.dismissLoadingView2()
+          }
+          
+          LoadingViewConstants.loadingTimeoutWorkItem = timeoutWorkItem
+          DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: timeoutWorkItem)
+      }
+     
+    func dismissLoadingView2() {
+        // Cancel the timeout work item if it’s still pending
+        LoadingViewConstants.loadingTimeoutWorkItem?.cancel()
+        LoadingViewConstants.loadingTimeoutWorkItem = nil
         
-        containerView.backgroundColor = .systemBackground
-        containerView.alpha = 0
+        // Remove the loading view
+        LoadingViewConstants.containerView?.removeFromSuperview()
+        LoadingViewConstants.containerView = nil
+    }
+    
+    
+    func showToast(message: String, duration: TimeInterval) {
+        let toastLabel = UILabel()
+        toastLabel.text = message
+        toastLabel.textColor = .white
+        toastLabel.textAlignment = .center
+        toastLabel.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        toastLabel.alpha = 1.0
+        toastLabel.layer.cornerRadius = 10
+        toastLabel.clipsToBounds = true
+        toastLabel.numberOfLines = 0
+        toastLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        UIView.animate(withDuration: 0.25) {
-            containerView.alpha = 0.8
-        }
-        
-        let activityIndicator = UIActivityIndicatorView(style: .large)
-        containerView.addSubview(activityIndicator)
-        
-        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(toastLabel)
         
         NSLayoutConstraint.activate([
-            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            toastLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            toastLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -100),
+            toastLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 300),
+            toastLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 40)
         ])
         
-        activityIndicator.startAnimating()
-        
-        let workItem = DispatchWorkItem { [weak self] in
-            self?.dismissLoadingView()
+        UIView.animate(withDuration: 0.5, animations: {
+            toastLabel.alpha = 1.0
+        }) { _ in
+            UIView.animate(withDuration: 0.5, delay: duration, options: .curveEaseOut, animations: {
+                toastLabel.alpha = 0.0
+            }) { _ in
+                toastLabel.removeFromSuperview()
+            }
         }
-        
-        loadingWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: workItem)
     }
 
     

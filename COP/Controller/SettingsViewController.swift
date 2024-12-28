@@ -1,9 +1,3 @@
-//
-//  SettingsViewController.swift
-//  ConstableOnPatrol
-//
-//  Created by Mac on 12/07/24.
-//
 import UIKit
 
 class SettingsViewController: UIViewController{
@@ -43,7 +37,7 @@ class SettingsViewController: UIViewController{
     }
     
     @IBAction func logoutPressed(_ sender: UIButton) {
-        phoneNumber = UserDefaults.standard.string(forKey: Ud.userPn) ?? UserDefaults.standard.string(forKey: Ud.signupPn)
+        phoneNumber = KeychainHelper.shared.retrieve(for: Ud.userPn) ?? KeychainHelper.shared.retrieve(for: Ud.signupPn)
         authService.logOut(phoneNumber: phoneNumber!, context: self)
     }
     @IBAction func editProfileTapped(_ sender: UIButton) {

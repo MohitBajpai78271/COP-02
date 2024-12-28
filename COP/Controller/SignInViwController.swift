@@ -57,8 +57,7 @@ class SignInViwController: UIViewController{
         
         let fullphoneNumber : String = "+91\(MoblineNoTextField.text!)"
         
-        UserDefaults.standard.set(phoneNumber,forKey: Ud.userPn)
-        UserDefaults.standard.synchronize()
+        KeychainHelper.shared.save(phoneNumber, for: Ud.userPn)
         
         UserData.shared.isSignup = false
         AuthService.shared.getOTP(phoneNumber: fullphoneNumber) { response, error in
@@ -68,14 +67,14 @@ class SignInViwController: UIViewController{
                     return
                 }
                 
-                if let response = response {
+                if response != nil {
                     UserData.shared.isSignup = false
-                    self.alertHelper.showAlert(on: self, message: response.msg)
-                    if response .success {
+//                    self.alertHelper.showAlert(on: self, message: response.message)
+//                    if response .message == "OTP sent successfully"  {
                         self.performSegue(withIdentifier: K.signinSegue, sender: fullphoneNumber)
-                    }  else {
-                        self.alertHelper.showAlert(on: self, message:  "No response received or data couldn't be decoded")
-                    }
+//                    }  else {
+//                        self.alertHelper.showAlert(on: self, message:  "No response received or data couldn't be decoded")
+//                    }
                 }
             }
             

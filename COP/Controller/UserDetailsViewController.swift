@@ -49,6 +49,7 @@ class UserDetailsViewController: UIViewController, UITextFieldDelegate, UIPicker
         textField.autocorrectionType = .no
         return textField
     }()
+    
     let nextButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -273,11 +274,10 @@ class UserDetailsViewController: UIViewController, UITextFieldDelegate, UIPicker
             address: address
         ) {
             DispatchQueue.main.async{
-                
-                UserDefaults.standard.set(userName, forKey: Ud.userName)
-                UserDefaults.standard.set(dob, forKey: Ud.dob)
-                UserDefaults.standard.set(gender, forKey: Ud.gender)
-                UserDefaults.standard.set(address, forKey: Ud.address)
+                KeychainHelper.shared.save(userName, for: Ud.userName)
+                KeychainHelper.shared.save(dob, for: Ud.dob)
+                KeychainHelper.shared.save(gender, for: Ud.gender)
+                KeychainHelper.shared.save(address, for: Ud.address)
                 UserDefaults.standard.set(true, forKey: Ud.isLoggedIn)
                 UserDefaults.standard.synchronize()
                 

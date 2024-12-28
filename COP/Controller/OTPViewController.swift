@@ -35,7 +35,7 @@ class OTPViewController: UIViewController{
         otpTextFieldSetUp()
         startTimer()
         resendButton.isHidden = true
-        phoneNumber = UserDefaults.standard.string(forKey: Ud.userPn) ?? UserDefaults.standard.string(forKey: Ud.signupPn)
+        phoneNumber =  KeychainHelper.shared.retrieve(for: Ud.userPn) ?? KeychainHelper.shared.retrieve(for: Ud.signupPn) 
     }
     
     @objc func dismssVC() {
@@ -145,7 +145,7 @@ class OTPViewController: UIViewController{
                 }
                 
                 if let response = response {
-                    if response .success {
+                    if response .message == "OTP sent successfully" {
                         print("otp resend successfully")
                     }  else {
                         self.alertHelper.showAlert(on: self, message:  "No response received or data couldn't be decoded")
@@ -232,6 +232,7 @@ class OTPViewController: UIViewController{
             do{
                 UserDefaults.standard.set(true, forKey: Ud.isLoggedIn)
                 UserDefaults.standard.synchronize()
+                
                 DispatchQueue.main.async {
                     self.performSegue(withIdentifier: K.segueToTab, sender: self)
                 }

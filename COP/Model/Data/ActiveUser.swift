@@ -12,8 +12,8 @@ struct ActiveUser: Codable {
     let name: String
     let mobileNumber: String
     let areas: [String]
-    let dutyStartTime: String
-    let dutyEndTime: String
+    let dutyStartTime: String?
+    let dutyEndTime: String?
     
     enum CodingKeys: String, CodingKey {
         case id = "_id"

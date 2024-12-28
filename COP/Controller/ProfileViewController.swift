@@ -34,6 +34,18 @@ class ProfileViewController: UIViewController, UITextFieldDelegate{
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.isHidden = true
+        guard let currentImageName = buttonImageNames[editView] else {return}
+        if currentImageName == image1{
+            UserName.isUserInteractionEnabled = false
+            DateOfBirth.isUserInteractionEnabled = false
+            PoliceStation.isUserInteractionEnabled = false
+            MobileNo.isUserInteractionEnabled = false
+        }
+        toggleButtonImage(to: image1, for: editView.self)
+        UserName.isUserInteractionEnabled = false
+        DateOfBirth.isUserInteractionEnabled = false
+        PoliceStation.isUserInteractionEnabled = false 
+        
     }
     
     let datePicker = UIDatePicker()
@@ -94,19 +106,19 @@ class ProfileViewController: UIViewController, UITextFieldDelegate{
          PoliceStation.delegate = self
         
         
-        if let userName = UserDefaults.standard.string(forKey: Ud.userName) {
+        if let userName = KeychainHelper.shared.retrieve(for: Ud.userName){
             UserName.text = userName
         }
-        if let phoneNumberSignup = UserDefaults.standard.string(forKey: Ud.signupPn), !phoneNumberSignup.isEmpty{
+        if let phoneNumberSignup = KeychainHelper.shared.retrieve(for: Ud.signupPn), !phoneNumberSignup.isEmpty{
             MobileNo.text = phoneNumberSignup
         }
-        if let phoneNumber = UserDefaults.standard.string(forKey: Ud.pn), !phoneNumber.isEmpty {
+        if let phoneNumber = KeychainHelper.shared.retrieve(for: Ud.pn), !phoneNumber.isEmpty {
             MobileNo.text = phoneNumber
         }
-        if let dateOfBirth = UserDefaults.standard.string(forKey: Ud.dob) {
+        if let dateOfBirth = KeychainHelper.shared.retrieve(for: Ud.dob){
             DateOfBirth.text = dateOfBirth
         }
-        if let address = UserDefaults.standard.string(forKey: Ud.address) {
+        if let address = KeychainHelper.shared.retrieve(for: Ud.address){
             PoliceStation.text = address
         }
         
@@ -139,38 +151,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate{
          DateOfBirth.inputView = datePicker
          DateOfBirth.inputAccessoryView = createToolbar()
      }
-    
-    func showToast(message: String, duration: TimeInterval) {
-        let toastLabel = UILabel()
-        toastLabel.text = message
-        toastLabel.textColor = .white
-        toastLabel.textAlignment = .center
-        toastLabel.backgroundColor = UIColor.black.withAlphaComponent(0.7)
-        toastLabel.alpha = 1.0
-        toastLabel.layer.cornerRadius = 10
-        toastLabel.clipsToBounds = true
-        toastLabel.numberOfLines = 0
-        toastLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        view.addSubview(toastLabel)
-        
-        NSLayoutConstraint.activate([
-            toastLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            toastLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -100),
-            toastLabel.widthAnchor.constraint(lessThanOrEqualToConstant: 300),
-            toastLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 40)
-        ])
-        
-        UIView.animate(withDuration: 0.5, animations: {
-            toastLabel.alpha = 1.0
-        }) { _ in
-            UIView.animate(withDuration: 0.5, delay: duration, options: .curveEaseOut, animations: {
-                toastLabel.alpha = 0.0
-            }) { _ in
-                toastLabel.removeFromSuperview()
-            }
-        }
-    }
 
      
     func createToolbar() -> UIToolbar {
@@ -179,7 +159,6 @@ class ProfileViewController: UIViewController, UITextFieldDelegate{
            
            let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(dismissPicker))
            let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-           
            toolbar.setItems([flexSpace, doneButton], animated: true)
            
            return toolbar
@@ -219,7 +198,7 @@ class ProfileViewController: UIViewController, UITextFieldDelegate{
       func enableTextFields(_ enable: Bool) {
           UserName.isUserInteractionEnabled = enable
           DateOfBirth.isUserInteractionEnabled = enable
-          MobileNo.isUserInteractionEnabled = enable
+          MobileNo.isUserInteractionEnabled  = false
           PoliceStation.isUserInteractionEnabled = enable
       }
 
@@ -234,19 +213,17 @@ class ProfileViewController: UIViewController, UITextFieldDelegate{
                   self.doAlert.showAlert(on: self, message: "Please fill in all fields")
                      return
                  }
-              UserDefaults.standard.set(phoneNumber, forKey: Ud.pn)
-              UserDefaults.standard.set(userName, forKey: Ud.userName)
-              UserDefaults.standard.set(address, forKey: Ud.address)
-              UserDefaults.standard.set(dateOfBirth, forKey: Ud.dob)
-              UserDefaults.standard.synchronize()
+
+              KeychainHelper.shared.save(phoneNumber, for: Ud.pn)
+              KeychainHelper.shared.save(userName, for: Ud.userName)
+              KeychainHelper.shared.save(address, for: Ud.address)
+              KeychainHelper.shared.save(dateOfBirth, for: Ud.dob)
               
               self.authService.updateUser(context: self, phoneNumber: phoneNumber, userName: userName, address: address, dateOfBirth: dateOfBirth) { result in
                   DispatchQueue.main.async{
                   switch result {
                   case .success:
-                      self.showToast(message: "Changes have been saved.", duration: 2.0)
                       self.enableTextFields(false)
-                      print("It is done")
                   case .failure(let error):
                       print("Its a failure : \(error.localizedDescription)")
                   }

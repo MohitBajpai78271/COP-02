@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23094" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23084"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Map view configurations" minToolsVersion="14.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -782,20 +783,20 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="Egg-ZD-khX">
-                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="841"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="uwQ-9A-ZMK"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstAttribute="bottom" secondItem="Egg-ZD-khX" secondAttribute="bottom" constant="55" id="4tk-Wv-8QH"/>
                             <constraint firstItem="Egg-ZD-khX" firstAttribute="leading" secondItem="uwQ-9A-ZMK" secondAttribute="leading" id="7iP-y0-k48"/>
                             <constraint firstItem="Egg-ZD-khX" firstAttribute="top" secondItem="uwQ-9A-ZMK" secondAttribute="top" id="UKl-Yz-Ofc"/>
                             <constraint firstItem="Egg-ZD-khX" firstAttribute="trailing" secondItem="uwQ-9A-ZMK" secondAttribute="trailing" id="cw0-Aw-S14"/>
-                            <constraint firstAttribute="bottom" secondItem="Egg-ZD-khX" secondAttribute="bottom" id="uae-BK-Mad"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="Admin View" image="shield.lefthalf.filled.badge.checkmark" catalog="system" id="kd3-Mi-apx"/>
+                    <tabBarItem key="tabBarItem" title="Admin View" image="shield.lefthalf.filled" catalog="system" id="kd3-Mi-apx"/>
                     <connections>
                         <outlet property="tableView" destination="Egg-ZD-khX" id="5Uc-M1-Vvh"/>
                         <segue destination="BB4-Qb-p0I" kind="show" identifier="segueToLocation" id="KXk-iO-RnJ"/>
@@ -814,7 +815,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9je-Wd-jd8">
-                                <rect key="frame" x="0.0" y="44" width="414" height="819"/>
+                                <rect key="frame" x="0.0" y="44" width="414" height="842"/>
                                 <standardMapConfiguration key="preferredConfiguration"/>
                             </mapView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Live Location" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1rI-sF-1gR">
@@ -831,7 +832,7 @@
                         <viewLayoutGuide key="safeArea" id="gIn-LG-pYy"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="1rI-sF-1gR" firstAttribute="bottom" secondItem="9je-Wd-jd8" secondAttribute="bottom" constant="-827" id="33P-KI-qwo"/>
+                            <constraint firstItem="1rI-sF-1gR" firstAttribute="bottom" secondItem="9je-Wd-jd8" secondAttribute="bottom" constant="-850" id="33P-KI-qwo"/>
                             <constraint firstItem="9je-Wd-jd8" firstAttribute="top" secondItem="1rI-sF-1gR" secondAttribute="bottom" constant="8" symbolic="YES" id="bWl-cx-mfs"/>
                             <constraint firstItem="9je-Wd-jd8" firstAttribute="trailing" secondItem="gIn-LG-pYy" secondAttribute="trailing" id="dsR-sc-bul"/>
                             <constraint firstItem="9je-Wd-jd8" firstAttribute="leading" secondItem="gIn-LG-pYy" secondAttribute="leading" id="iQv-5R-ZcQ"/>
@@ -847,7 +848,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b1B-Kb-G0z" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="6239.7196261682238" y="811.87904967602594"/>
+            <point key="canvasLocation" x="6239.130434782609" y="811.60714285714278"/>
         </scene>
         <!--ProfileViewController-->
         <scene sceneID="4qL-6h-vzU">
@@ -1267,8 +1268,8 @@
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="bfz-sp-dxX"/>
-        <segue reference="ntG-BT-W6u"/>
-        <segue reference="TtZ-NG-G2C"/>
+        <segue reference="YTp-Gm-L5C"/>
+        <segue reference="oEd-cq-xM3"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="Image" width="188" height="123"/>
@@ -17952,7 +17953,7 @@ AAAAD0GWA
         <image name="house.fill" catalog="system" width="128" height="104"/>
         <image name="person.crop.circle.fill" catalog="system" width="128" height="123"/>
         <image name="person.fill" catalog="system" width="128" height="120"/>
-        <image name="shield.lefthalf.filled.badge.checkmark" catalog="system" width="122" height="128"/>
+        <image name="shield.lefthalf.filled" catalog="system" width="121" height="128"/>
         <image name="text.alignright" catalog="system" width="128" height="101"/>
         <image name="triangle.fill" catalog="system" width="128" height="109"/>
         <systemColor name="labelColor">

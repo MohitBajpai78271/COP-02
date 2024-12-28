@@ -18,4 +18,8 @@ struct Ud{
     static let userRole = "userRole"
     static let pn = "phoneNumber"
     static let isLoggedIn = "isLoggedIn"
+    static let userId = "userId"
+    static let baseURl = "baseURL"
+    static let activeUserUrl = "activeUser"
+    static let locnUrl = "locnUrl"
 }

@@ -13,8 +13,11 @@ struct LocationOfUser: Codable {
     let phoneNumber: String?
     let latitude: Double?
     let longitude: Double?
-    let timestamp: String // Correct the key to match the JSON response
+    let timestamp: String
     let v: Int
+    var name: String?        // Add this property
+    var startTime: String?   // Add this property
+    var endTime: String?     // Add this property
 
     enum CodingKeys: String, CodingKey {
         case id = "_id"
@@ -22,7 +25,11 @@ struct LocationOfUser: Codable {
         case phoneNumber
         case latitude
         case longitude
-        case timestamp // Match the JSON key
+        case timestamp
         case v = "__v"
+        case name         // Add this mapping
+        case startTime    // Add this mapping
+        case endTime      // Add this mapping
     }
 }
+

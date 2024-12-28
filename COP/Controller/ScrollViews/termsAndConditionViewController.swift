@@ -11,11 +11,8 @@ class termsAndConditionViewController: UIViewController{
     
     @IBOutlet weak var termsAndConditions: UITextView!
     
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupText()
     }
     
@@ -24,10 +21,7 @@ class termsAndConditionViewController: UIViewController{
         navigationController?.setNavigationBarHidden(false, animated: true)
     }
     
-    
     private func setupText(){
-        
-        
         let fullText = """
 
         These Terms and Conditions govern your use of the Constable On Patrol (COP) App, developed and provided by SKILLOP Society in Delhi Technological University. By downloading, installing, or using the App, you agree to comply with these Terms. If you do not agree with any part of these Terms, do not use the App.

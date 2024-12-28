@@ -15,6 +15,9 @@ class LocationViewController: UIViewController, MKMapViewDelegate{
     @IBOutlet weak var locationLabel: UILabel!
     
     var phoneNumber : String?
+    var name : String?
+    var startTime : String?
+    var endTime : String?
     var locationData: LocationOfUser?
     var polygonColors = [MKPolygon: UIColor]()
     var locationPolygons = [String: MKPolygon]()
@@ -43,6 +46,13 @@ class LocationViewController: UIViewController, MKMapViewDelegate{
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarHidden(false, animated: true)
         navigationController?.navigationBar.prefersLargeTitles = false
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if let locationData = locationData {
+            zoomToLocation(locationData: locationData)
+        }
     }
     
     func checkLocation(){
@@ -74,7 +84,6 @@ class LocationViewController: UIViewController, MKMapViewDelegate{
         setMapViewBoundaries(for: coordinatesSwaroop, color: UIColor(red: 255/255, green: 20/255, blue: 147/255, alpha: 1.0))
 
     }
-
     
      func decodeLocationData(_ data: Data) {
          do {
@@ -84,6 +93,15 @@ class LocationViewController: UIViewController, MKMapViewDelegate{
              print("Failed to decode location data: \(error)")
          }
      }
+    
+    func zoomToLocation(locationData: LocationOfUser) {
+          guard let latitude = locationData.latitude,
+                let longitude = locationData.longitude else { return }
+          
+          let coordinate = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+          let region = MKCoordinateRegion(center: coordinate, latitudinalMeters: 200, longitudinalMeters: 200)  // Adjust zoom level by changing meters
+          MapView.setRegion(region, animated: true)
+      }
      
      func showLocationOnMap(locationData: LocationOfUser) {
          let coordinate = CLLocationCoordinate2D(latitude: locationData.latitude!, longitude: locationData.longitude!)
@@ -91,7 +109,15 @@ class LocationViewController: UIViewController, MKMapViewDelegate{
          if CLLocationCoordinate2DIsValid(coordinate) {
              let annotation = MKPointAnnotation()
              annotation.coordinate = coordinate
-             annotation.title = "User Location"
+             if let userName = self.name{
+                 annotation.title = userName
+             }
+//             annotation.subtitle = "Start: \(locationData.startTime ?? "N/A"), End: \(locationData.endTime ?? "N/A")"
+             annotation.subtitle = """
+             phoneNumber: \(self.phoneNumber ?? "N/A")
+             Start: \(locationData.startTime ?? "N/A")
+             End: \(locationData.endTime ?? "N/A")
+             """
              MapView.addAnnotation(annotation)
              
              let region = MKCoordinateRegion(center: coordinate, latitudinalMeters: 500, longitudinalMeters: 500)
@@ -160,7 +186,7 @@ class LocationViewController: UIViewController, MKMapViewDelegate{
         }
         
         do {
-            let data = try String(contentsOfFile: filePath)
+            let data = try String(contentsOfFile: filePath,encoding: .utf8)
             let rows = data.components(separatedBy: "\n")
 
             for row in rows {
@@ -196,5 +222,5 @@ class LocationViewController: UIViewController, MKMapViewDelegate{
         }
     }
 }
-    
+
 

@@ -22,26 +22,49 @@ class AuthService{
      }
     
     //MARK: - Get OTP
-    
-    func getOTP(phoneNumber: String,completion: @escaping(OTPResponse?, Error?)->Void){
+//    
+//    func getOTP(phoneNumber: String,completion: @escaping(OTPResponse?, Error?)->Void){
+//        let urlString = "\(ApiKeys.baseURL)/api/send-otp"
+//        let parameters: [String: Any] = ["phoneNumber": phoneNumber]
+//        
+//        AF.request(urlString, method: .post, parameters: parameters, encoding: JSONEncoding.default)
+//            .responseDecodable(of: OTPResponse.self) { response in
+//                if let data = response.data {
+//                    print("Raw Response Data: \(String(data: data, encoding: .utf8) ?? "No Data")")
+//                    do {
+//                        let otpResponse = try JSONDecoder().decode(OTPResponse.self, from: data)
+//                        completion(otpResponse, nil)
+//                    } catch let decodeError {
+//                        completion(nil, decodeError)
+//                    }
+//                } else {
+//                    completion(nil, NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "No data in response"]))
+//                }
+//            }
+//    }
+    func getOTP(phoneNumber: String, completion: @escaping (OTPResponse?, Error?) -> Void) {
         let urlString = "\(ApiKeys.baseURL)/api/send-otp"
         let parameters: [String: Any] = ["phoneNumber": phoneNumber]
         
-        AF.request(urlString, method: .post, parameters: parameters, encoding: JSONEncoding.default)
+        // Ensure you have the correct headers if needed
+        let headers: HTTPHeaders = [
+            "Content-Type": "application/json",
+            "Authorization": "Bearer YOUR_TOKEN_HERE" // Replace with actual token if needed
+        ]
+        
+        AF.request(urlString, method: .post, parameters: parameters, encoding: JSONEncoding.default, headers: headers)
             .responseDecodable(of: OTPResponse.self) { response in
-                if let data = response.data {
-                    print("Raw Response Data: \(String(data: data, encoding: .utf8) ?? "No Data")")
-                    do {
-                        let otpResponse = try JSONDecoder().decode(OTPResponse.self, from: data)
-                        completion(otpResponse, nil)
-                    } catch let decodeError {
-                        completion(nil, decodeError)
-                    }
-                } else {
-                    completion(nil, NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "No data in response"]))
+                switch response.result {
+                case .success(let otpResponse):
+                    completion(otpResponse, nil)
+                    print("success healpern")
+                case .failure(let error):
+                    print("Error: \(error.localizedDescription)")
+                    completion(nil, error)
                 }
             }
     }
+
   
     //MARK: - Verify OTP
     
@@ -71,7 +94,6 @@ class AuthService{
               }
               
               if let data = data {
-                         // Print raw response data for debugging
                          print("Response data: \(String(describing: String(data: data, encoding: .utf8)))")
                          
                          do {
@@ -81,27 +103,30 @@ class AuthService{
                                                    let msg = jsonResponse["msg"] as? String, msg == "User already logged in" {
                                                     DispatchQueue.main.async {
                                                         showLogoutAlert?()
-                                            }
-                                                    return
                                     }
-                                 
+                                    return
+                            }
                                  if let userRole = jsonResponse["userRole"] as? String {
-                                     UserDefaults.standard.set(userRole, forKey: Ud.userRole)
+                                     KeychainHelper.shared.save(userRole, for: Ud.userRole)
                                  }
                                  if let token = jsonResponse["token"] as? String {
-                                     UserDefaults.standard.set(token, forKey: Ud.token)
+                                     KeychainHelper.shared.save(token, for: Ud.token)
                                  }
                                  if let userName = jsonResponse["userName"] as? String {
-                                     UserDefaults.standard.set(userName, forKey: Ud.userName)
+                                     KeychainHelper.shared.save(userName, for: Ud.userName)
                                  }
                                  if let dateOfBirth = jsonResponse["dateOfBirth"] as? String {
-                                     UserDefaults.standard.set(dateOfBirth, forKey: Ud.dob)
+                                     KeychainHelper.shared.save(dateOfBirth, for: Ud.dob)
                                  }
                                  if let address = jsonResponse["address"] as? String {
-                                     UserDefaults.standard.set(address, forKey: Ud.address)
+                                     KeychainHelper.shared.save(address, for: Ud.address)
                                  }
                                  if let phoneNumber = jsonResponse["phoneNumber"] as? String{
-                                     UserDefaults.standard.set(phoneNumber, forKey: Ud.pn)
+                                     KeychainHelper.shared.save(phoneNumber, for: Ud.pn)
+                                 }
+                                 if let userId = jsonResponse["_id"] as? String{
+                                     print("This is the userId -\(userId)");
+                                     KeychainHelper.shared.save(userId, for: Ud.userId)
                                  }
                                  
                              }
@@ -181,7 +206,7 @@ class AuthService{
             
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             
-            if let token = UserDefaults.standard.string(forKey: Ud.token) {
+            if let token = KeychainHelper.shared.retrieve(for: Ud.token){
                 request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
             }
             
@@ -200,16 +225,15 @@ class AuthService{
                         print("Response Body: \(responseBody)")
                     }
                     if response.statusCode == 200 {
-                        UserDefaults.standard.removeObject(forKey: Ud.token)
-                        UserDefaults.standard.removeObject(forKey: Ud.userPn)
-                        UserDefaults.standard.removeObject(forKey: Ud.userRole)
-                        UserDefaults.standard.removeObject(forKey: Ud.signupPn)
-                        UserDefaults.standard.removeObject(forKey: Ud.userName)
-                        UserDefaults.standard.removeObject(forKey: Ud.dob)
-                        UserDefaults.standard.removeObject(forKey: Ud.address)
-                        UserDefaults.standard.removeObject(forKey: Ud.pn)
                         UserDefaults.standard.set(false, forKey: Ud.isLoggedIn)
-                        UserDefaults.standard.synchronize()
+                        KeychainHelper.shared.delete(for: Ud.token)
+                        KeychainHelper.shared.delete(for: Ud.userPn)
+                        KeychainHelper.shared.delete(for: Ud.userRole)
+                        KeychainHelper.shared.delete(for: Ud.signupPn)
+                        KeychainHelper.shared.delete(for: Ud.userName)
+                        KeychainHelper.shared.delete(for: Ud.dob)
+                        KeychainHelper.shared.delete(for: Ud.address)
+                        KeychainHelper.shared.delete(for: Ud.pn)
                         
                         DispatchQueue.main.async {
                              let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -261,7 +285,6 @@ class AuthService{
         request.httpMethod = "POST"
         request.setValue("application/json; charset=UTF-8", forHTTPHeaderField: "Content-Type")
         
-        // Creating the user dictionary
         let user: [String: Any] = [
             "userRole": "",
             "id": "",
@@ -273,7 +296,6 @@ class AuthService{
             "dateOfBirth": dateOfBirth
         ]
         
-        // Convert the dictionary to JSON data
         do {
             request.httpBody = try JSONSerialization.data(withJSONObject: user, options: [])
         } catch {
@@ -284,7 +306,6 @@ class AuthService{
         }
         
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            // Check for network errors
             if let error = error {
                 DispatchQueue.main.async {
                     self.showSnackBar(context: context, message: "Network error: \(error.localizedDescription)")
@@ -292,7 +313,6 @@ class AuthService{
                 return
             }
             
-            // Check for valid response
             guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
                 DispatchQueue.main.async {
                     self.showSnackBar(context: context, message: "Failed to create user. Status code: \((response as? HTTPURLResponse)?.statusCode ?? -1)")
@@ -312,8 +332,8 @@ class AuthService{
                     if let token = json["token"] as? String, let userRole = json["userRole"] as? String  {
                         
 
-                        UserDefaults.standard.set(token, forKey: Ud.token)
-                        UserDefaults.standard.set(userRole, forKey: Ud.userRole)
+                        KeychainHelper.shared.save(token, for: Ud.token)
+                        KeychainHelper.shared.save(userRole, for: Ud.userRole)
                         
                         DispatchQueue.main.async {
                             self.showSnackBar(context: context, message: "User created successfully")
@@ -338,7 +358,7 @@ class AuthService{
     
     func updateUser(context: UIViewController, phoneNumber: String, userName: String, address: String, dateOfBirth: String, completion: @escaping (Result<Void, Error>) -> Void) {
         
-        guard let token = UserDefaults.standard.string(forKey: Ud.token) else {
+        guard let token = KeychainHelper.shared.retrieve(for: Ud.token) else{
             showSnackBar(context: context, message: "No token found")
             return
         }
@@ -379,7 +399,7 @@ class AuthService{
             }
 
             if httpResponse.statusCode == 200 {
-                print("done successfully")
+               print("Done successfully")
             } else {
                 DispatchQueue.main.async {
                     completion(.failure(NSError(domain: "", code: httpResponse.statusCode, userInfo: nil)))
@@ -396,5 +416,21 @@ class AuthService{
 extension Dictionary {
     func toJsonData() -> Data? {
         return try? JSONSerialization.data(withJSONObject: self, options: [])
+    }
+}
+
+class Person{
+    var name : String
+    init(name : String){
+        self.name = name
+    }
+    func getName(){
+        print("\(self.name)")
+    }
+}
+
+class indian : Person{
+    override func getName() {
+        print("\(self.name) + ,I am indian")
     }
 }

@@ -116,9 +116,8 @@ class SignUpViewController: UIViewController{
             self.alertHelper.showAlert(on: self, message: "Enter correct number")
         }else{
            
-            UserDefaults.standard.removeObject(forKey: Ud.userPn)
-            UserDefaults.standard.set(phoneNumber,forKey: Ud.signupPn)
-            UserDefaults.standard.synchronize()
+            KeychainHelper.shared.delete(for: Ud.pn)
+            KeychainHelper.shared.save(phoneNumber, for: Ud.signupPn)
             
             UserData.shared.isSignup = true
             let fullphoneNumber = "+91\(phoneNumber)"
@@ -131,7 +130,7 @@ class SignUpViewController: UIViewController{
                     }
                     if let response = response {
                         self.performSegue(withIdentifier: K.signupSegue, sender: fullphoneNumber)
-                        self.alertHelper.showAlert(on: self, message: response.msg)
+                        self.alertHelper.showAlert(on: self, message: response.message)
                     }
                 }
             }

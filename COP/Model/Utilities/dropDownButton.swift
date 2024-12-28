@@ -45,20 +45,29 @@ class dropDownButton: UIButton{
           }
       }
       
-      private func presentOptions(on viewController: UIViewController) {
-          let alertController = UIAlertController(title: "Select an Option", message: nil, preferredStyle: .actionSheet)
-          
-          for option in options {
-              let action = UIAlertAction(title: option, style: .default) { [weak self] _ in
-                  self?.delegate?.dropDownButton(self!, didSelectOption: option)
-              }
-              alertController.addAction(action)
-          }
-          
-          alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-          self.alertController = alertController
-          viewController.present(alertController, animated: true, completion: nil)
-      }
+    private func presentOptions(on viewController: UIViewController) {
+        let alertController = UIAlertController(title: "Select an Option", message: nil, preferredStyle: .actionSheet)
+        
+        for option in options {
+            let action = UIAlertAction(title: option, style: .default) { [weak self] _ in
+                self?.delegate?.dropDownButton(self!, didSelectOption: option)
+            }
+            alertController.addAction(action)
+        }
+        
+        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        self.alertController = alertController
+        
+        // iPad-specific adjustments
+        if let popoverController = alertController.popoverPresentationController {
+            popoverController.sourceView = self
+            popoverController.sourceRect = self.bounds
+            popoverController.permittedArrowDirections = .up
+        }
+        
+        viewController.present(alertController, animated: true, completion: nil)
+    }
+
       
       @objc func dismissAlertController() {
           delegate?.dropDownButtonHideOptions(self)
